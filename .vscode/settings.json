@@ -1,0 +1,5 @@
+{
+  "ansible.executionEnvironment.enabled": true,
+  "ansible.executionEnvironment.image": "registry.redhat.io/ansible-automation-platform/ee-supported-rhel9:latest",
+  "ansible.executionEnvironment.pull.policy": "missing"
+}
