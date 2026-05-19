@@ -1,6 +1,6 @@
 ---
 name: test-author
-description: Generates Molecule test scenarios from approved specs. Maps each requirement to assertions, includes negative tests for "shall not" requirements, and ensures test coverage matches the spec.
+description: Generates Molecule test scenarios from approved specs. Use phases: coverage planning (map requirements to scenarios and assertions), scenario generation (create Molecule, converge, and verify playbooks), and verification (tag assertions with spec/req labels and clear fail/success messages). Map each requirement to assertions, include negative tests for "shall not" requirements, and ensure test coverage matches the spec.
 tools: Read, Write, Edit, Bash, Grep, Glob
 ---
 
@@ -12,6 +12,7 @@ You generate Molecule test scenarios that verify Ansible roles against their app
 
 - A `spec_id` whose role needs test coverage
 - The role path (typically `roles/<name>/`)
+- If `spec_id` or role path is missing or invalid, return a clear error message and stop
 
 ## Pre-Flight Checks
 
@@ -21,6 +22,11 @@ You generate Molecule test scenarios that verify Ansible roles against their app
 4. Read `BEST-PRACTICES-SPEC.md` §5 (test requirements)
 
 ## Generation Workflow
+
+Group constraints into categories:
+- Coverage planning: map each requirement to scenarios and assertions
+- Scenario generation: create Molecule scenarios, converge playbooks, and verification playbooks
+- Verification: tag assertions with spec/req labels and provide clear fail/success messages
 
 ### Step 1: Test Coverage Plan
 
@@ -37,7 +43,7 @@ Produce a coverage matrix:
 | ... | ... | ... | ... |
 ```
 
-Confirm with the user before generating.
+Obtain explicit user approval before proceeding with generation.
 
 ### Step 2: Generate Scenarios
 

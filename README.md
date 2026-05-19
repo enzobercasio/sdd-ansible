@@ -39,6 +39,9 @@ Human writes spec  →  Claude Code reads spec  →  Claude generates playbook +
 sdd-ansible/
 ├── README.md                          ← You are here
 ├── CLAUDE.md                          ← Project memory: tells Claude Code how to work here
+├── ansible.cfg                        ← Sets roles_path = examples/roles
+├── requirements.yml                   ← Ansible Galaxy collection dependencies
+├── .ansible-lint                      ← SDD-aware lint profile
 ├── docs/
 │   ├── 01-implementation-plan.md      ← 8-week rollout plan
 │   ├── 02-how-to-guide.md             ← Step-by-step workflow
@@ -62,6 +65,8 @@ sdd-ansible/
 │       ├── playbook-author.md         ← Sub-agent: generates playbooks from specs
 │       ├── test-author.md             ← Sub-agent: generates Molecule tests
 │       └── security-reviewer.md       ← Sub-agent: regulated-env security review
+├── ci/
+│   └── check-spec-coverage.sh        ← CI script: validates spec traceability
 └── examples/
     ├── playbooks/                     ← Generated playbooks (linked to specs)
     └── roles/                         ← Generated roles (one per spec)
