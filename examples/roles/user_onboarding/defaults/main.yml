@@ -1,0 +1,17 @@
+---
+# Defaults for user_onboarding role
+# Source: AUTO-2026-0019 §5 Input Contract
+
+# REQ-1: standard UID range starting point
+user_onboarding_base_uid: 5000
+
+# REQ-5: whether to reconcile keys on every run (removes unspecified keys)
+user_onboarding_reconcile_keys: true
+
+# REQ-PLATFORM-11: CMDB endpoint for outcome reporting
+# Empty string disables CMDB integration (e.g., in test scenarios)
+user_onboarding_cmdb_endpoint: ""
+user_onboarding_cmdb_token: ""
+
+# Required input — no default, must be supplied
+# users: list of dicts (see spec §5)

@@ -1,0 +1,29 @@
+---
+# This converge runs identically to default scenario.
+# Molecule's `idempotence` step runs it a SECOND time and asserts zero changes.
+# This verifies REQ-4 (existing user produces no changes) and REQ-UNI-10.
+
+- name: Converge — onboard test users (run 1 of 2 for idempotence check)
+  hosts: all
+  become: true
+  vars:
+    users:
+      - username: testuser1
+        groups: [engineering, docker]
+        ssh_keys:
+          - "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAITEST1 testuser1@laptop"
+      - username: testuser2
+        groups: [engineering]
+        ssh_keys:
+          - "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAITEST2 testuser2@laptop"
+
+  tasks:
+    - name: Add inventory_hostname to engineering-access group (test setup)
+      ansible.builtin.add_host:
+        name: "{{ inventory_hostname }}"
+        groups: engineering-access
+      changed_when: false
+
+    - name: Apply role under test
+      ansible.builtin.include_role:
+        name: user_onboarding

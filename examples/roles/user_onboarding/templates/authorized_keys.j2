@@ -1,0 +1,6 @@
+# Managed by Ansible — AUTO-2026-0019 (REQ-5: key reconciliation)
+# Do not edit manually; changes will be overwritten.
+# Source spec: specs/examples/AUTO-2026-0019-user-onboarding.md
+{% for key in item.ssh_keys %}
+{{ key }}
+{% endfor %}

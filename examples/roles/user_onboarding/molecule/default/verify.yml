@@ -1,0 +1,90 @@
+---
+- name: Verify — AUTO-2026-0019 acceptance criteria
+  hosts: all
+  gather_facts: false
+  tasks:
+
+    - name: Read passwd entry for testuser1
+      ansible.builtin.getent:
+        database: passwd
+        key: testuser1
+      register: testuser1_passwd
+
+    - name: Read passwd entry for testuser2
+      ansible.builtin.getent:
+        database: passwd
+        key: testuser2
+      register: testuser2_passwd
+
+    - name: Verify REQ-1 — testuser1 created with UID in standard range
+      ansible.builtin.assert:
+        that:
+          - getent_passwd['testuser1'] is defined
+          - getent_passwd['testuser1'][1] | int >= 5000
+          - getent_passwd['testuser1'][1] | int <= 9999
+        fail_msg: "REQ-1 violation: testuser1 UID outside 5000-9999 range — see specs/AUTO-2026-0019 §3 REQ-1"
+        success_msg: "REQ-1 satisfied for testuser1"
+      tags:
+        - "spec:AUTO-2026-0019"
+        - "req:REQ-1"
+
+    - name: Verify REQ-1 — testuser2 created with UID in standard range
+      ansible.builtin.assert:
+        that:
+          - getent_passwd['testuser2'] is defined
+          - getent_passwd['testuser2'][1] | int >= 5000
+          - getent_passwd['testuser2'][1] | int <= 9999
+        fail_msg: "REQ-1 violation: testuser2 UID outside 5000-9999 range"
+        success_msg: "REQ-1 satisfied for testuser2"
+      tags:
+        - "spec:AUTO-2026-0019"
+        - "req:REQ-1"
+
+    - name: Read group membership for testuser1
+      ansible.builtin.command:
+        cmd: id -Gn testuser1
+      register: testuser1_groups
+      changed_when: false
+
+    - name: Verify REQ-2 — testuser1 has expected group memberships
+      ansible.builtin.assert:
+        that:
+          - "'engineering' in testuser1_groups.stdout"
+          - "'docker' in testuser1_groups.stdout"
+        fail_msg: "REQ-2 violation: testuser1 missing expected groups — see specs/AUTO-2026-0019 §3 REQ-2"
+        success_msg: "REQ-2 satisfied for testuser1"
+      tags:
+        - "spec:AUTO-2026-0019"
+        - "req:REQ-2"
+
+    - name: Stat authorized_keys for testuser1
+      ansible.builtin.stat:
+        path: /home/testuser1/.ssh/authorized_keys
+      register: testuser1_authkeys
+
+    - name: Verify REQ-3 — authorized_keys exists with correct mode
+      ansible.builtin.assert:
+        that:
+          - testuser1_authkeys.stat.exists
+          - testuser1_authkeys.stat.mode == '0600'
+          - testuser1_authkeys.stat.pw_name == 'testuser1'
+        fail_msg: "REQ-3 violation: authorized_keys missing or wrong mode — see specs/AUTO-2026-0019 §3 REQ-3"
+        success_msg: "REQ-3 satisfied for testuser1"
+      tags:
+        - "spec:AUTO-2026-0019"
+        - "req:REQ-3"
+
+    - name: Read authorized_keys content
+      ansible.builtin.slurp:
+        src: /home/testuser1/.ssh/authorized_keys
+      register: testuser1_authkeys_content
+
+    - name: Verify REQ-3 — authorized_keys content matches spec input
+      ansible.builtin.assert:
+        that:
+          - "'TEST1' in (testuser1_authkeys_content.content | b64decode)"
+        fail_msg: "REQ-3 violation: testuser1 SSH key not deployed correctly"
+        success_msg: "REQ-3 content verified for testuser1"
+      tags:
+        - "spec:AUTO-2026-0019"
+        - "req:REQ-3"

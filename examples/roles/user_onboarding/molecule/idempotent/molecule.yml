@@ -1,0 +1,49 @@
+---
+# Molecule scenario: idempotent
+# Spec: AUTO-2026-0019
+# Covers: REQ-4 (existing user with matching UID/groups produces no changes)
+# Universal: REQ-UNI-10 (idempotency)
+
+dependency:
+  name: galaxy
+
+driver:
+  name: docker
+
+platforms:
+  - name: instance-rhel9-idem
+    image: registry.access.redhat.com/ubi9/ubi-init:latest
+    pre_build_image: true
+    privileged: true
+    cgroupns_mode: host
+    command: /sbin/init
+    tmpfs:
+      - /run
+      - /tmp
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:rw
+
+provisioner:
+  name: ansible
+  config_options:
+    defaults:
+      callbacks_enabled: ansible.posix.profile_tasks
+  inventory:
+    group_vars:
+      all:
+        spec_id: "AUTO-2026-0019"
+        spec_version: "1.2"
+
+scenario:
+  test_sequence:
+    - dependency
+    - syntax
+    - create
+    - prepare
+    - converge
+    - idempotence    # The key step — molecule re-runs converge and asserts zero changes
+    - verify
+    - destroy
+
+verifier:
+  name: ansible

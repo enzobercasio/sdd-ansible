@@ -1,0 +1,24 @@
+---
+galaxy_info:
+  role_name: user_onboarding
+  description: "Implements AUTO-2026-0019 — Standard User Account Onboarding to Linux Hosts"
+  spec_id: AUTO-2026-0019
+  spec_version: "1.2"
+  author: platform-engineering@company.com
+  license: internal
+  min_ansible_version: "2.16"
+  platforms:
+    - name: EL
+      versions:
+        - "8"
+        - "9"
+    - name: Ubuntu
+      versions:
+        - jammy
+        - noble
+  galaxy_tags:
+    - users
+    - onboarding
+    - identity
+
+dependencies: []
