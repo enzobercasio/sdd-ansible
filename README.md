@@ -134,8 +134,8 @@ Spec  →  Playbook  →  Lint  →  Molecule  →  AAP execution  →  EDA vali
 
 ---
 
-## A Note for Adoption Architects
+## Note
 
 This kit is designed for a CoE to publish, a CoP to consume, and an AAP customer to operate against — all without licensing additional tooling beyond Claude Code and existing AAP entitlements.
 
-For regulated APAC accounts, the audit story is the differentiator: **every change traces from approved spec → reviewed PR → tested role → AAP-gated execution → EDA-validated outcome**, all in Git, all in plain text, all auditable.
+The audit story is the differentiator: **every change traces from approved spec → reviewed PR → tested role → AAP-gated execution → EDA-validated outcome**, all in Git, all in plain text, all auditable.
