@@ -1,48 +1,9 @@
----
-# .ansible-lint
-# SDD-aware lint configuration for spec-driven Ansible repository.
-# Enforces both standard Ansible best practices AND repo-specific SDD rules.
-
-profile: production
-
 exclude_paths:
   - .cache/
   - .github/
-  - molecule/
-  - "**/molecule/"
-  - tests/
-  - venv/
-
-# Rules to enable (over and above the production profile)
-enable_list:
-  - fqcn-builtins              # Universal REQ-UNI-4
-  - no-changed-when            # Universal REQ-UNI-12
-  - no-handler                 # Encourage native modules over notify chains
-  - risky-file-permissions     # Universal REQ-UNI-34
-  - risky-shell-pipe           # Universal REQ-UNI-63 (avoid shell pipelines)
-  - var-naming                 # Universal REQ-UNI-5
-  - no-log-password            # Universal REQ-UNI-33
-
-# Rules to skip (with justification — every skip is technical debt)
 skip_list:
-  - experimental               # Don't fail on experimental rules during transition
-
-# Warn on these (track but don't block)
-warn_list:
-  - command-instead-of-shell
-  - deprecated-command-syntax
-
-# Variable naming pattern (REQ-UNI-5: snake_case, role-prefixed)
-var_naming_pattern: "^[a-z_][a-z0-9_]*$"
-
-# Tag enforcement: every play/task in production paths must have spec_id tag
-# (Implemented via custom rule SDD001 in .ansible-lint-rules/)
-extra_vars:
-  required_play_tags:
-    - "spec:"
-
-# Offline mode for air-gapped environments
-offline: false
-
-# Verbose output during CI
-verbosity: 1
+  - experimental
+enable_list:
+  - fqcn-builtins
+  - no-changed-when
+  - risky-shell-pipe

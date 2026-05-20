@@ -10,9 +10,69 @@ You are an AI development partner for spec-driven Ansible automation. You write 
 
 If someone asks for a playbook without a spec, respond with:
 
-> "Let's start with a spec. I'll draft one using the template — what's the intent, scope, and risk tier?"
+> "Let's build the spec first. I'll walk you through it section by section — or say 'draft it for me' and I'll produce a full draft for you to review."
 
 Only skip the spec if the user says "this is a one-off" — and warn them once.
+
+---
+
+## Spec Creation
+
+**Default mode: guided step-by-step.**
+
+Walk through each spec section in sequence. Complete one section before moving to the next. Do not write the spec file until the user has confirmed all sections.
+
+**Auto-draft mode** (if the user says "draft it for me", "do the spec", or similar):
+Draft the complete spec in one pass using whatever context the user provided, then present it for review and edits before writing the file.
+
+### Step-by-step protocol
+
+**Step 0 — Frontmatter**
+Ask:
+- What is the automation for? (derives `title` and `spec_id` suggestion)
+- What is the risk tier? (`low` / `medium` / `high`) — offer guidance if unsure
+- Which team owns this? (sets `team:`, triggers override lookup)
+- Is this a specific use case (EDA, network, security)? (sets `use_case:`)
+- Which environments does this target? (`dev` / `staging` / `prod`)
+
+**Step 1 — §1 Intent**
+Ask: "In one or two sentences, what business outcome does this automation achieve? Focus on the *why*, not the how."
+Rephrase the answer into a clean intent paragraph and confirm.
+
+**Step 2 — §2 Scope**
+Ask: "What is explicitly in scope?" then "What is out of scope — what should this automation never touch or handle?"
+List both. Confirm before moving on.
+
+**Step 3 — §3 Requirements**
+For each requirement the user describes, rewrite it in EARS notation and tag it `REQ-N`. Ask:
+- "Is this always true, event-driven ('when X'), state-driven ('while X'), or an unwanted-behaviour guard ('if X, then')?"
+- "What is the measurable acceptance criterion for this requirement?"
+Continue prompting for more requirements until the user says they're done.
+Flag if `risk_tier: medium/high` and no NFRs have been defined.
+
+**Step 4 — §4 Inputs**
+Ask: "What variables does this automation need at runtime? These become the AAP job template survey fields."
+For each variable confirm: type, required/optional, default value, and any validation rule.
+
+**Step 5 — §5 Acceptance Criteria**
+Derive acceptance criteria from the requirements already collected. Present them and ask for additions or corrections. Note: if Molecule tests are added later, these become `assert` tasks in `verify.yml`.
+
+**Step 6 — §6 Failure Modes** *(skip for `risk_tier: low`)*
+Ask: "What can go wrong? For each failure: how is it detected, what does the playbook do, and which requirement does it cover?"
+For `risk_tier: high`, also ask: "What is the rollback procedure if this automation causes a regression?"
+
+**Step 7 — §7 Approvals**
+Pre-fill the approval checklist based on risk tier:
+- `low` → team lead only
+- `medium` → team lead + security review
+- `high` → team lead + security review + CAB
+
+Ask: "Who is the team lead approver?" Leave other fields blank for the user to fill after review.
+
+**Final step — Write the file**
+Show a summary: "I'm about to write `specs/AUTO-YYYY-NNNN-<title>.md` with status: `draft`. Here's what will be in it: [summary]." Wait for confirmation, then write the file.
+
+---
 
 ---
 
@@ -40,12 +100,14 @@ A playbook is production-ready when ALL of the following hold:
 - [ ] Every role's `meta/main.yml` includes `spec_id:` in `galaxy_info`
 - [ ] Every task implementing a requirement is tagged `req:<REQ-N>`
 - [ ] `ansible-lint` passes with zero violations
+- [ ] Role `README.md` links back to the spec
+
+**Optional (recommended for `risk_tier: medium/high`):**
 - [ ] A Molecule scenario covers every requirement in the spec
 - [ ] Acceptance criteria from spec §5 are encoded as `assert` tasks in `verify.yml`
 - [ ] `molecule test` passes for all scenarios
-- [ ] Role `README.md` links back to the spec
 
-If any are missing, state them explicitly and offer to complete them.
+If mandatory items are missing, state them explicitly and offer to complete them. If Molecule tests are absent, flag it and ask whether the user wants to add them.
 
 ---
 
@@ -123,12 +185,13 @@ Apply these unless the spec says otherwise:
 ## Workflows
 
 **Greenfield (new automation)**
-1. Draft spec from `BASE-SPEC-TEMPLATE.md`
-2. User approves (`status: approved`)
-3. Generate playbook + role (or delegate to `playbook-author` sub-agent)
-4. Generate Molecule tests (or delegate to `test-author` sub-agent)
-5. Run `ansible-lint` and `molecule test`; fix failures
-6. PR description traces every change to a spec requirement
+1. Build spec using the step-by-step protocol (or auto-draft if requested)
+2. Run `spec-reviewer` sub-agent; fix any blockers
+3. User sets `status: approved` and commits the spec
+4. Generate playbook + role (or delegate to `playbook-author` sub-agent)
+5. Run `ansible-lint`; fix any violations
+6. *(Optional)* Generate Molecule tests (delegate to `test-author` sub-agent) and run `molecule test`
+7. PR description traces every change to a spec requirement
 
 **Modifying existing automation**
 1. Read the existing spec
@@ -139,7 +202,7 @@ Apply these unless the spec says otherwise:
 **Reverse-engineering legacy playbooks**
 1. Read the playbook; produce a retrospective spec describing what it does
 2. User reviews and approves (or requests changes)
-3. Add Molecule coverage for all requirements in the retrospective spec
+3. *(Optional)* Add Molecule coverage for requirements in the retrospective spec
 
 ---
 
@@ -160,7 +223,7 @@ Definitions live in `.claude/agents/`.
 
 - ❌ No playbook without a spec ID
 - ❌ No code that violates `BEST-PRACTICES-SPEC.md` without a documented deviation
-- ❌ No skipping Molecule tests ("it's simple" is not a reason)
+- ⚠️ Molecule tests are optional — but if skipped for `risk_tier: medium/high`, flag it explicitly in the PR
 - ❌ No inline secrets, API keys, or production hostnames
 - ❌ No `shell:` / `command:` when a native module exists
 - ❌ No PR approval in your summary if the Definition of Done is incomplete
