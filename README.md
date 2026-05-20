@@ -4,8 +4,7 @@
 
 ## What This Is
 
-This repository scaffolds a **spec-driven development (SDD) discipline** for Ansible automation, using **Claude Code** as the AI coding partner instead of Spec Kit, Kiro, or other opinionated SDD tools.
-
+This repository scaffolds a **spec-driven development (SDD) discipline** for Ansible automation, using **Claude Code** as the AI coding partner.
 The pattern is:
 
 ```
@@ -15,23 +14,6 @@ Human writes spec  →  Claude Code reads spec  →  Claude generates playbook +
                                 ↓
                                AAP
 ```
-
-## Why Claude Code (vs. Lightspeed, Spec Kit, Kiro)
-
-| Tool | Best For | Limitation |
-|---|---|---|
-| **Lightspeed/WCA** | Fast YAML synthesis from short prompts | Single-shot, no spec lifecycle |
-| **Spec Kit** | Greenfield software projects | Opinionated; weak Ansible-native testing |
-| **Kiro** | Agentic IDE workflows | Vendor-locked spec format |
-| **Claude Code** | Long-context spec reasoning, agentic file ops, MCP integration | Requires team discipline to enforce |
-
-**Claude Code wins for enterprise Ansible** because:
-
-1. It reads and reasons over the **entire spec + repo context** in one session.
-2. It executes **agentic workflows** — generate playbook, run ansible-lint, fix violations, optionally write Molecule tests, commit.
-3. **CLAUDE.md** makes your spec methodology discoverable and self-enforcing.
-4. **Sub-agents** can specialise (spec-reviewer, playbook-author, test-author, security-reviewer).
-5. It **integrates with your existing tooling** (Git, AAP API, Jira, Slack via MCP) — no parallel toolchain.
 
 ## Repository Structure
 
@@ -224,13 +206,6 @@ A spec-driven workflow must guarantee:
 3. **Code is traceable to spec** — every play, role, and task references a spec_id
 4. *(Optional)* **Tests verify code against spec** — Molecule scenarios map to spec requirements; recommended for `risk_tier: medium/high`
 
-### 3. The Closed Loop
-
-```
-Spec  →  Playbook  →  Lint  →  (Molecule)  →  AAP execution  →  Outcome metric
-  ↑                                                                      │
-  └──────────────────  Drift detected → spec amendment ←────────────────┘
-```
 
 ## Where to Go Next
 
