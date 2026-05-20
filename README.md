@@ -15,6 +15,41 @@ Human writes spec  →  Claude Code reads spec  →  Claude generates playbook +
                                AAP
 ```
 
+## Features
+
+### Guided spec creation
+Claude Code walks you through each spec section interactively — one section at a time, one question at a time — before writing any file. Alternatively, say "draft it for me" and Claude produces a full draft for you to review. Either way, no code is generated until the spec is approved.
+
+### Three-layer spec hierarchy
+Requirements are inherited in order: `BEST-PRACTICES-SPEC.md` (universal baseline) → `TEAM-<name>-overrides.md` (team conventions) → `USE-CASE-<x>-overrides.md` (domain-specific rules) → individual spec. Constraints defined once at a higher layer automatically apply to every playbook that inherits it. Conflicts are flagged and documented in the spec's Deviations table.
+
+### Risk-tier scaled approvals
+Every spec declares `risk_tier: low | medium | high`. Approval requirements scale accordingly — team lead only for low, adding security review for medium, adding CAB sign-off for high. The approval checklist lives inside the spec file itself, versioned in Git alongside the code it governs.
+
+### Four specialised sub-agents
+Claude Code sub-agents handle distinct stages of the workflow:
+- **`spec-reviewer`** — audits a spec for completeness, ambiguity, and testability before any code is written
+- **`playbook-author`** — generates lint-clean, traceable playbooks and roles from an approved spec
+- **`test-author`** — produces Molecule scenarios mapped to spec requirements (optional)
+- **`security-reviewer`** — reviews generated code for regulated-environment security posture with severity-graded findings
+
+### Full spec-to-code traceability
+Every generated play declares `spec_id`, every role's `meta/main.yml` embeds `spec_id` and `spec_version`, and every task that implements a requirement is tagged `req:REQ-N`. The CI script `check-spec-coverage.sh` enforces this as a pre-merge gate — PRs that break traceability are blocked.
+
+### SDD-aware ansible-lint profile
+The `.ansible-lint` configuration enforces a production-grade profile with additional rules aligned to spec requirements: FQCN module names, variable naming conventions, no-log on secrets, risky file permissions, and more. Every lint skip must be justified — unannotated skips are treated as technical debt.
+
+### Execution Environment-first testing
+`.vscode/settings.json` configures the VS Code Ansible extension to run all playbook executions and Molecule tests inside the AAP-supported RHEL 9 EE. Local test results match what AAP produces in production. Molecule testing is optional — recommended for `risk_tier: medium/high`.
+
+### AAP-ready role READMEs
+Every generated role README includes a complete AAP Usage section: job template field settings, a survey table mapped directly from spec §4 inputs, and an `aap job launch` CLI example. Testing instructions cover check-mode dry runs, `ansible-navigator` EE runs, and Molecule (where present).
+
+### Plain-text audit trail
+Every decision traces through Git: approved spec commit → playbook PR → AAP job execution, all in plain text, all auditable without additional tooling. Designed for regulated environments where auditability is a hard requirement.
+
+---
+
 ## Repository Structure
 
 ```

@@ -23,7 +23,24 @@ Only skip the spec if the user says "this is a one-off" — and warn them once.
 Walk through each spec section in sequence. Complete one section before moving to the next. Do not write the spec file until the user has confirmed all sections.
 
 **Auto-draft mode** (if the user says "draft it for me", "do the spec", or similar):
-Draft the complete spec in one pass using whatever context the user provided, then present it for review and edits before writing the file.
+Before drafting, present the following confirmation prompt:
+
+> ⚠️ **Auto-draft caveats — please read before proceeding:**
+>
+> - The draft will be based only on the context you've provided so far. Missing context means assumptions — and assumptions in specs become defects in code.
+> - Requirements will be inferred from your description. They may be incomplete, incorrectly scoped, or missing edge cases that only you know about.
+> - Risk tier, team overrides, and use-case overlays will be guessed if not explicitly stated — verify these are correct before approving.
+> - **You must review every section of the generated spec before setting `status: approved`.** Auto-drafted specs are a starting point, not a finished contract.
+>
+> Shall I proceed with the auto-draft?
+
+Only continue after the user confirms. Once the draft is generated, end with:
+
+> 📋 **Draft complete. Before approving this spec:**
+> - Read every section carefully — requirements you didn't intend may be present; requirements you need may be missing
+> - Check that the risk tier matches the actual blast radius of this automation
+> - Verify the §4 Inputs match what your AAP job template survey will collect
+> - Run the `spec-reviewer` sub-agent for an independent check before setting `status: approved`
 
 ### Step-by-step protocol
 
