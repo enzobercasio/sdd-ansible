@@ -157,7 +157,7 @@ Once the retrospective spec is approved, you can refactor against it with confid
 ### Workflow: Spec Drift Investigation
 
 ```
-> EDA detected spec drift on AUTO-2026-0042 yesterday at 23:14 SGT.
+> A job for AUTO-2026-0042 produced unexpected results.
 > The job logs are in /tmp/job-12345.log. Diagnose what diverged from
 > the spec and recommend whether to amend the spec or fix the playbook.
 ```

@@ -79,7 +79,7 @@ and why? Update the spec's "Deviations" section if needed.
 ### Pattern 6: Spec Drift Investigation
 
 ```
-Job <ID> for spec <ID> failed an EDA spec compliance check.
+Job <ID> for spec <ID> produced unexpected results.
 - Job log: <path or paste>
 - Spec: specs/<file>.md
 

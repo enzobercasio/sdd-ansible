@@ -207,6 +207,21 @@ A spec-driven workflow must guarantee:
 4. *(Optional)* **Tests verify code against spec** — Molecule scenarios map to spec requirements; recommended for `risk_tier: medium/high`
 
 
+## Workflows
+
+Six patterns cover most day-to-day work. Full prompts and step-by-step detail for each are in [`docs/02-how-to-guide.md`](docs/02-how-to-guide.md).
+
+| Workflow | When to use | Entry point |
+|---|---|---|
+| **Greenfield** | Net-new automation — no playbook exists yet | `> I need to automate X. Help me draft a spec.` |
+| **Modify existing** | A requirement changes, a bug needs fixing, or a new input is added | `> Read spec AUTO-YYYY-NNNN, I need to add dry-run support.` |
+| **Reverse-engineer legacy** | An undocumented playbook exists and needs a spec before it can be safely changed | `> Read this legacy playbook and produce a retrospective spec.` |
+| **Spec drift investigation** | A job produced unexpected results — diagnose what diverged from the spec | `> Job logs are in /tmp/job-NNN.log. What diverged from the spec?` |
+| **Bulk spec audit** | Compliance check — which specs are approved, which lack playbooks, which lack tests | `> Audit all specs/ and produce a compliance report.` |
+| **Onboard new engineer** | First time in the repo — walk through one complete SDD cycle as a learning exercise | `> Walk me through one complete spec-driven cycle using AUTO-YYYY-NNNN.` |
+
+---
+
 ## Where to Go Next
 
 - **New to SDD?** → `docs/02-how-to-guide.md`
@@ -220,4 +235,4 @@ A spec-driven workflow must guarantee:
 
 This kit is designed for a CoE to publish, a CoP to consume, and an AAP customer to operate against — all without licensing additional tooling beyond Claude Code and existing AAP entitlements.
 
-The audit story is the differentiator: **every change traces from approved spec → reviewed PR → tested role → AAP-gated execution → EDA-validated outcome**, all in Git, all in plain text, all auditable.
+The audit story is the differentiator: **every change traces from approved spec → reviewed PR → tested role → AAP-gated execution**, all in Git, all in plain text, all auditable.

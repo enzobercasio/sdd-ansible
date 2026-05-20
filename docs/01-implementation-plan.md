@@ -10,7 +10,7 @@ This plan moves a team or organisation from ad-hoc playbook authoring to spec-dr
 |---|---|---|---|
 | **Phase 1: Foundation** | Weeks 1–2 | Crawl | Repo scaffold, base specs, first playbook |
 | **Phase 2: Pilot** | Weeks 3–5 | Walk | 3–5 specs delivered through full SDD flow |
-| **Phase 3: Scale** | Weeks 6–8 | Run | Team-specific overrides, CI/CD enforcement, EDA closed-loop |
+| **Phase 3: Scale** | Weeks 6–8 | Run | Team-specific overrides, CI/CD enforcement, AAP integration |
 
 ---
 
@@ -204,7 +204,6 @@ These are **horizontal** — any team writing an EDA rulebook applies the EDA ov
 
 - Make SDD the default workflow (CI enforces it)
 - Integrate with AAP for runtime enforcement
-- Deploy EDA-based closed-loop validation
 - Roll out organisation-wide training
 
 ### Week 6: CI/CD Enforcement
@@ -261,42 +260,19 @@ ansible-playbook ci/sync-aap-surveys.yml \
   -e "aap_template_id=42"
 ```
 
-### Week 8: EDA Closed-Loop
+### Week 8: Training and Adoption
 
-Deploy an EDA rulebook that validates spec compliance after every job execution:
+Roll out organisation-wide training and confirm steady-state operation:
 
-```yaml
-- name: Spec compliance enforcement
-  hosts: all
-  sources:
-    - ansible.eda.aap:
-        host: aap.example.com
-  rules:
-    - name: Validate spec acceptance criteria post-execution
-      condition: event.payload.status == "successful"
-      action:
-        run_playbook:
-          name: ci/validate-spec-outcomes.yml
-          extra_vars:
-            spec_id: "{{ event.payload.extra_vars.spec_id }}"
-            job_id: "{{ event.payload.id }}"
-
-    - name: Alert on spec drift
-      condition: event.payload.status == "spec_drift_detected"
-      action:
-        post_event:
-          event:
-            type: spec_drift
-            spec_id: "{{ event.spec_id }}"
-            severity: high
-```
+1. Run SDD walkthrough sessions for each team using their own `TEAM-<name>-overrides.md`
+2. Validate that CI gates are blocking non-compliant PRs in all active repos
+3. Confirm AAP job templates are synced to spec inputs (surveys match spec §4)
+4. Review and close any outstanding draft specs from the pilot phase
 
 ### Phase 3 Exit Criteria
 
 - [ ] CI blocks non-SDD PRs
 - [ ] AAP surveys auto-sync from spec inputs
-- [ ] EDA validates spec compliance on every job
-- [ ] Spec drift dashboard exists
 - [ ] Organisation-wide training complete
 
 ---
@@ -322,7 +298,7 @@ Track these from Week 2 onward:
 | % of specs with passing Molecule tests | >90% |
 | Mean time from spec draft to approved | <3 days |
 | Mean time from approved spec to deployed playbook | <2 days |
-| Number of spec drift events per month | <5 (declining) |
+| Number of unplanned spec amendments per month | <5 (declining) |
 | % of engineers trained on SDD | 100% |
 | Audit findings on automation changes | 0 |
 
@@ -338,7 +314,7 @@ Track these from Week 2 onward:
 
 ### Pitfall 3: "Specs go stale"
 
-**Avoid by**: automating spec drift detection via EDA. When actual behaviour diverges from spec acceptance criteria, fire an alert.
+**Avoid by**: scheduling quarterly spec reviews and tracking unplanned amendments in your metrics. When job outcomes diverge from spec acceptance criteria, treat it as a signal to review and update the spec.
 
 ### Pitfall 4: "Team overrides become a dumping ground"
 
