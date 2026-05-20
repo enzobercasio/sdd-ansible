@@ -75,15 +75,6 @@ sdd-ansible/
 ### Root configuration files
 
 **`CLAUDE.md`** — Project memory for Claude Code. Read automatically at the start of every session. Defines your role (AI development partner, not YAML autocompleter), the three-layer spec hierarchy, the Definition of Done checklist, required code patterns (play headers, task tagging, role meta), coding defaults (FQCN, snake_case, loop syntax, secrets handling), and the four hard limits. This is the single file that makes the SDD discipline self-enforcing without manual reminders. Update it when your team adopts a new convention.
-
-**`ansible.cfg`** — Sets `roles_path = examples/roles` so `ansible-playbook` finds generated roles by name (e.g. `role: user_onboarding`) without requiring a path prefix. Run all `ansible-playbook` and `ansible-lint` commands from the repo root.
-
-**`requirements.yml`** — Pinned Ansible Galaxy collection dependencies. All versions are locked per the `BEST-PRACTICES-SPEC.md` supply-chain requirement. Add collections here rather than installing them ad-hoc; this keeps the EE and local environments in sync.
-
-**`.ansible-lint`** — SDD-aware lint profile set to `profile: production`. Enables additional rules beyond the production baseline: `fqcn-builtins`, `no-changed-when`, `risky-file-permissions`, `var-naming`, `no-log-password`. Every task that would pass default lint but violate a spec requirement gets caught here. Add custom rule overrides with justification comments — each skip is documented technical debt.
-
-**`.vscode/settings.json`** — VS Code Ansible extension configuration. Sets `ansible.executionEnvironment.enabled: true` so all Molecule tests and playbook runs from the IDE execute inside the AAP-supported RHEL 9 execution environment. This ensures local test results match what AAP produces in production.
-
 ---
 
 ### `docs/` — Human-readable guides
@@ -161,7 +152,7 @@ Run as part of your pipeline to prevent non-compliant PRs from merging. Exits no
 ```bash
 # 1. Clone this scaffold into your automation repo
 git clone <this-repo> sdd-ansible-scaffold
-cp -r sdd-ansible-scaffold/{CLAUDE.md,specs,.claude,docs} your-automation-repo/
+cp -r sdd-ansible-scaffold/{README.md,CLAUDE.md,specs,.claude,docs} your-automation-repo/
 
 # 2. Install Claude Code (if not already)
 npm install -g @anthropic-ai/claude-code
@@ -233,6 +224,8 @@ Six patterns cover most day-to-day work. Full prompts and step-by-step detail fo
 
 ## Note
 
-This kit is designed for a CoE to publish, a CoP to consume, and an AAP customer to operate against — all without licensing additional tooling beyond Claude Code and existing AAP entitlements.
+This kit is designed for a CoE to publish, a CoP to consume, and a teams to operate against.
 
 The audit story is the differentiator: **every change traces from approved spec → reviewed PR → tested role → AAP-gated execution**, all in Git, all in plain text, all auditable.
+
+Not all workflows have been tested. This is an in-progress framework.
