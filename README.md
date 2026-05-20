@@ -75,6 +75,7 @@ sdd-ansible/
 ### Root configuration files
 
 **`CLAUDE.md`** — Project memory for Claude Code. Read automatically at the start of every session. Defines your role (AI development partner, not YAML autocompleter), the three-layer spec hierarchy, the Definition of Done checklist, required code patterns (play headers, task tagging, role meta), coding defaults (FQCN, snake_case, loop syntax, secrets handling), and the four hard limits. This is the single file that makes the SDD discipline self-enforcing without manual reminders. Update it when your team adopts a new convention.
+
 ---
 
 ### `docs/` — Human-readable guides
