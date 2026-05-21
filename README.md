@@ -32,6 +32,7 @@ Claude Code sub-agents handle distinct stages of the workflow:
 - **`playbook-author`** — generates lint-clean, traceable playbooks and roles from an approved spec
 - **`test-author`** — produces Molecule scenarios mapped to spec requirements (optional)
 - **`security-reviewer`** — reviews generated code for regulated-environment security posture with severity-graded findings
+- **`tutor`** — CoE-aware onboarding agent that teaches SDD concepts using real repo files, at the learner's pace
 
 ### Full spec-to-code traceability
 Every generated play declares `spec_id`, every role's `meta/main.yml` embeds `spec_id` and `spec_version`, and every task that implements a requirement is tagged `req:REQ-N`. The CI script `check-spec-coverage.sh` enforces this as a pre-merge gate — PRs that break traceability are blocked.
@@ -76,6 +77,10 @@ sdd-ansible/
 │   │   └── AUTO-2026-0055-eda-disk-remediation.md
 │   └── team-overrides/
 │       ├── TEAM-PLATFORM-overrides.md
+│       ├── TEAM-RHEL-overrides.md
+│       ├── TEAM-AWS-overrides.md
+│       ├── TEAM-WINDOWS-overrides.md
+│       ├── TEAM-NETWORK-overrides.md
 │       ├── USE-CASE-NETWORK-overrides.md
 │       └── USE-CASE-EDA-overrides.md
 ├── .claude/
@@ -83,7 +88,8 @@ sdd-ansible/
 │       ├── spec-reviewer.md
 │       ├── playbook-author.md
 │       ├── test-author.md
-│       └── security-reviewer.md
+│       ├── security-reviewer.md
+│       └── tutor.md
 ├── ci/
 │   └── check-spec-coverage.sh
 └── examples/
@@ -138,7 +144,15 @@ This is the source of truth for all automation behaviour. No code is generated w
 - `AUTO-2026-0042-rhel-patching.md` — medium-risk, illustrates maintenance window constraints, rolling batch requirements, and rollback documentation
 - `AUTO-2026-0055-eda-disk-remediation.md` — EDA-triggered remediation, illustrates event-driven requirements and the `use_case: eda` override layering
 
-**`specs/team-overrides/TEAM-PLATFORM-overrides.md`** — Platform team additions that layer on top of `BEST-PRACTICES-SPEC.md` for any spec declaring `team: platform`. Defines platform-specific secrets handling (HashiCorp Vault KV2, AppRole auth), network policies, and SIEM integration requirements. Create additional `TEAM-<name>-overrides.md` files as new teams adopt the kit — this avoids duplicating team conventions across individual specs.
+**`specs/team-overrides/TEAM-PLATFORM-overrides.md`** — Platform team additions that layer on top of `BEST-PRACTICES-SPEC.md` for any spec declaring `team: platform`. Defines platform-specific secrets handling (HashiCorp Vault KV2, AppRole auth), CMDB integration, network policies, and SIEM integration requirements.
+
+**`specs/team-overrides/TEAM-RHEL-overrides.md`** — Rules for RHEL-focused teams (`team: rhel`). Covers: `dnf`/`dnf5` package management, RHEL System Roles (`redhat.rhel_system_roles`) as the preferred implementation vehicle for 12+ common functions (SELinux, firewall, timesync, networking, storage, crypto policy), SELinux enforcement requirements, subscription management via `rhc`, and FIPS/cryptographic policy handling. References Red Hat RHEL 9 official documentation throughout.
+
+**`specs/team-overrides/TEAM-AWS-overrides.md`** — Rules for AWS automation teams (`team: aws`). Covers: IAM credential injection (no hardcoded keys), mandatory resource tagging (spec_id, managed_by, environment), EC2 dynamic inventory requirements, resource deletion guards, network security group constraints, IaC boundary rules (no modifying Terraform/CFN-managed resources), and RDS snapshot requirements before deletion. References `amazon.aws` certified collection documentation.
+
+**`specs/team-overrides/TEAM-WINDOWS-overrides.md`** — Rules for Windows automation teams (`team: windows`). Covers: WinRM vs SSH transport selection, `ansible.windows` module usage over legacy `win_*` forms, module selection table for 15 common Windows functions, `become_method: runas` for privilege, Chocolatey and Windows Update management, registry handling constraints, and certificate store operations. References `ansible.windows` official collection documentation.
+
+**`specs/team-overrides/TEAM-NETWORK-overrides.md`** — Rules for network device automation teams (`team: network`). Covers: connection plugin selection per OS/vendor, mandatory pre-change configuration backup, commit-confirmation patterns (Junos confirmed-commit, IOS-XR commit confirmed), change window enforcement, serial execution (no parallel changes to network devices), resource modules over raw CLI push, NETCONF/httpapi conventions, and idempotency challenges unique to network devices. References `ansible.netcommon` and vendor collection documentation.
 
 **`specs/team-overrides/USE-CASE-NETWORK-overrides.md`** and **`USE-CASE-EDA-overrides.md`** — Use-case overlays for automations that declare `use_case: network` or `use_case: eda`. Capture constraints specific to network device automation (connection plugins, idempotency challenges, rollback complexity) and EDA-triggered automation (event validation, replay-attack prevention, rate limiting) respectively.
 
@@ -154,7 +168,9 @@ Sub-agents are specialised Claude Code contexts invoked by name for well-defined
 
 **`test-author.md`** — Generates Molecule test scenarios from spec requirements. Molecule testing is optional; invoke this agent when you want test coverage. Produces a coverage matrix mapping each `REQ-N` to a scenario and assertion, waits for user approval, then generates `molecule.yml`, `converge.yml`, and `verify.yml` for each scenario. Includes positive (happy-path), negative ("shall refuse"/"shall not"), and idempotency scenarios. All tests run inside the configured EE via the VS Code Ansible extension.
 
-**`security-reviewer.md`** — Reviews generated code for regulated-environment security posture. Covers secrets handling, privilege management, input validation, network security, audit logging, supply-chain hygiene, and a structured threat model (compromised exec env, compromised credentials, replay attacks, lateral movement, data exfiltration). Returns severity-graded findings (`CRITICAL`/`HIGH`/`MEDIUM`/`LOW`) and a deployment verdict. Required for `risk_tier: medium/high` before merge.
+**`security-reviewer.md`** — Reviews generated code for regulated-environment security posture.
+
+**`tutor.md`** — CoE-aware onboarding agent for engineers new to Ansible or SDD. Teaches concepts using the actual files in this repo as examples, explains the "why" behind every rule, and walks through real specs and roles at the learner's pace. Does not write or modify any files. Invoke with: `> Use the tutor sub-agent to walk me through how spec-driven development works.` Covers secrets handling, privilege management, input validation, network security, audit logging, supply-chain hygiene, and a structured threat model (compromised exec env, compromised credentials, replay attacks, lateral movement, data exfiltration). Returns severity-graded findings (`CRITICAL`/`HIGH`/`MEDIUM`/`LOW`) and a deployment verdict. Required for `risk_tier: medium/high` before merge.
 
 ---
 

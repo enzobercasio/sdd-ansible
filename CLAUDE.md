@@ -231,6 +231,7 @@ Apply these unless the spec says otherwise:
 | `playbook-author` | Generate playbook + role structure from an approved spec |
 | `test-author` | Generate Molecule scenarios from spec requirements |
 | `security-reviewer` | Review for regulated-environment security posture |
+| `tutor` | Onboard new engineers; explain SDD concepts using real repo examples |
 
 Definitions live in `.claude/agents/`.
 
