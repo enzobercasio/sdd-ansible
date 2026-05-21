@@ -136,8 +136,8 @@ Rules are enforced by:
 | `ansible-lint` production profile | REQ-S1, REQ-S2, REQ-I2, REQ-P2, REQ-P3, REQ-P5, REQ-T1 |
 | `ansible-playbook --syntax-check` | REQ-T2 |
 | `ci/check-spec-coverage.sh` | REQ-S3, REQ-S4 |
-| Spec review (`spec-reviewer` sub-agent) | REQ-I*, REQ-V*, REQ-P*, REQ-L*, REQ-E* |
-| `security-reviewer` sub-agent | REQ-P*, REQ-C*, REQ-E* |
+| Spec review (`@spec-reviewer` rule) | REQ-I*, REQ-V*, REQ-P*, REQ-L*, REQ-E* |
+| `@security-reviewer` rule | REQ-P*, REQ-C*, REQ-E* |
 | Molecule idempotency scenario | REQ-I1, REQ-T5 |
 | Periodic CoE audits | All |
 

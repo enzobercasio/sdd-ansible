@@ -1,4 +1,4 @@
-# Implementation Plan: Spec-Driven Ansible with Claude Code
+# Implementation Plan: Spec-Driven Ansible with Cursor
 
 > An 8-week rollout plan, designed for a CoE/CoP model with executive visibility.
 
@@ -19,7 +19,7 @@ This plan moves a team or organisation from ad-hoc playbook authoring to spec-dr
 ### Goals
 
 - Scaffold the SDD repo
-- Onboard 2–3 core CoE engineers to Claude Code
+- Onboard 2–3 core CoE engineers to Cursor
 - Produce the first end-to-end spec → playbook → tests artifact
 - Demonstrate the workflow to leadership
 
@@ -31,7 +31,7 @@ This plan moves a team or organisation from ad-hoc playbook authoring to spec-dr
 # Create repo and copy scaffold
 git init automation-sdd
 cd automation-sdd
-cp -r <this-kit>/{CLAUDE.md,specs,docs,.claude} .
+cp -r <this-kit>/{README.md,specs,docs,.cursor} .
 
 # Initialise the lint config
 cat > .ansible-lint <<'EOF'
@@ -51,13 +51,13 @@ git add .
 git commit -m "[SDD-INIT] Initial spec-driven scaffold"
 ```
 
-#### Day 3: Claude Code Onboarding
+#### Day 3: Cursor Onboarding
 
-Have 2–3 CoE engineers install Claude Code and run the canonical first session:
+Have 2–3 CoE engineers open the repo in Cursor and run the canonical first session:
 
 ```
-> Read CLAUDE.md, then walk me through how spec-driven development works
-> in this repo. List what you'll do for me, and what I'll do.
+@tutor Walk me through how spec-driven development works
+in this repo. List what you'll do for me, and what I'll do.
 ```
 
 Engineers should leave the session understanding:
@@ -67,7 +67,7 @@ Engineers should leave the session understanding:
 
 #### Day 4–5: Author the First Real Spec
 
-Pick a low-risk, high-frequency automation use case (user account creation, log rotation, certificate renewal). Write the spec collaboratively with Claude Code:
+Pick a low-risk, high-frequency automation use case (user account creation, log rotation, certificate renewal). Write the spec collaboratively with Cursor:
 
 ```
 > I want to automate <use case>. Walk me through the BASE-SPEC-TEMPLATE
@@ -80,16 +80,15 @@ Pick a low-risk, high-frequency automation use case (user account creation, log 
 #### Day 1–2: Generate Playbook from Spec
 
 ```
-> Read specs/AUTO-2026-0001-<name>.md. Use the playbook-author sub-agent
-> to generate the role and playbook. Make sure all four invariants are
-> satisfied before you finish.
+> Read specs/AUTO-2026-0001-<name>.md. @playbook-author generate the role
+> and playbook. Make sure all four invariants are satisfied before you finish.
 ```
 
 #### Day 3: Generate Tests
 
 ```
-> Use the test-author sub-agent to generate Molecule scenarios for
-> AUTO-2026-0001. Each REQ in the spec must have at least one scenario.
+> @test-author Generate Molecule scenarios for AUTO-2026-0001.
+> Each REQ in the spec must have at least one scenario.
 ```
 
 #### Day 4: Run Through CI
@@ -123,7 +122,7 @@ jobs:
 
 30-minute walkthrough for leadership covering:
 - A spec being written (10 min)
-- Claude Code generating the playbook from the spec (5 min)
+- Cursor generating the playbook from the spec (5 min)
 - The tests verifying the spec (5 min)
 - Audit trail in Git (5 min)
 - Q&A (5 min)
@@ -282,9 +281,9 @@ Roll out organisation-wide training and confirm steady-state operation:
 | Role | Responsibility |
 |---|---|
 | **CoE Lead** | Owns the BEST-PRACTICES-SPEC, approves changes |
-| **CoE Engineers** | Author and maintain spec templates, sub-agents, CI tooling |
+| **CoE Engineers** | Author and maintain spec templates, Cursor rules, CI tooling |
 | **Team Leads (CoP)** | Author team-override specs; review team's playbook specs |
-| **Engineers** | Write specs, generate playbooks via Claude Code, run tests |
+| **Engineers** | Write specs, generate playbooks via Cursor, run tests |
 | **Security/Compliance** | Review all `risk_tier: medium/high` specs |
 | **Auditors** | Consume Git history + AAP logs as the audit trail |
 
@@ -310,7 +309,7 @@ Track these from Week 2 onward:
 
 ### Pitfall 2: "Engineers skip writing tests"
 
-**Avoid by**: making tests part of the playbook-author sub-agent's output by default. CI rejects roles without Molecule scenarios.
+**Avoid by**: making tests part of the `@playbook-author` / `@test-author` workflow by default. CI rejects roles without Molecule scenarios.
 
 ### Pitfall 3: "Specs go stale"
 
@@ -320,7 +319,7 @@ Track these from Week 2 onward:
 
 **Avoid by**: quarterly review of team overrides. Anything that's truly universal gets promoted to BEST-PRACTICES-SPEC.
 
-### Pitfall 5: "Claude Code generates plausible but wrong code"
+### Pitfall 5: "Cursor generates plausible but wrong code"
 
 **Avoid by**: the four invariants. Generated code that doesn't pass lint + Molecule never reaches production. The discipline catches AI errors.
 

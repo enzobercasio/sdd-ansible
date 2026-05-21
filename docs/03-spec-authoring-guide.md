@@ -257,6 +257,6 @@ Before submitting a spec for review:
 - [ ] Could a developer who has never met me implement this correctly?
 - [ ] Could a tester write Molecule scenarios from this without asking me questions?
 - [ ] Could an auditor verify compliance from this six months from now?
-- [ ] Could Claude Code generate a sensible playbook from this?
+- [ ] Could Cursor generate a sensible playbook from this?
 
 If any answer is no, keep refining.
