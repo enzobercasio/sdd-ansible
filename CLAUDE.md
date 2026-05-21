@@ -1,10 +1,8 @@
----
-description: Core spec-driven Ansible development rules. Always active. Governs spec creation workflow, code generation standards, and the definition of done for all Ansible automation in this repo.
-globs:
-alwaysApply: true
----
+# CLAUDE.md — Spec-Driven Ansible Development
 
-# Spec-Driven Ansible Development — Core Rules
+Project memory for Claude Code. Read at the start of every session.
+
+---
 
 ## Your Role
 
@@ -42,7 +40,7 @@ Only continue after the user confirms. Once the draft is generated, end with:
 > - Read every section carefully — requirements you didn't intend may be present; requirements you need may be missing
 > - Check that the risk tier matches the actual blast radius of this automation
 > - Verify the §4 Inputs match what your AAP job template survey will collect
-> - Run the `@spec-reviewer` rule for an independent check before setting `status: approved`
+> - Run the `spec-reviewer` sub-agent for an independent check before setting `status: approved`
 
 ### Step-by-step protocol
 
@@ -90,6 +88,8 @@ Ask: "Who is the team lead approver?" Leave other fields blank for the user to f
 
 **Final step — Write the file**
 Show a summary: "I'm about to write `specs/AUTO-YYYY-NNNN-<title>.md` with status: `draft`. Here's what will be in it: [summary]." Wait for confirmation, then write the file.
+
+---
 
 ---
 
@@ -203,11 +203,11 @@ Apply these unless the spec says otherwise:
 
 **Greenfield (new automation)**
 1. Build spec using the step-by-step protocol (or auto-draft if requested)
-2. Invoke `@spec-reviewer` rule; fix any blockers
+2. Run `spec-reviewer` sub-agent; fix any blockers
 3. User sets `status: approved` and commits the spec
-4. Generate playbook + role (or invoke `@playbook-author` rule)
+4. Generate playbook + role (or delegate to `playbook-author` sub-agent)
 5. Run `ansible-lint`; fix any violations
-6. *(Optional)* Generate Molecule tests (invoke `@test-author` rule) and run `molecule test`
+6. *(Optional)* Generate Molecule tests (delegate to `test-author` sub-agent) and run `molecule test`
 7. PR description traces every change to a spec requirement
 
 **Modifying existing automation**
@@ -223,15 +223,17 @@ Apply these unless the spec says otherwise:
 
 ---
 
-## Available Rules (invoke with @rule-name in chat)
+## Sub-Agents
 
-| Rule | When to use |
+| Agent | When to use |
 |---|---|
-| `@spec-reviewer` | Review a spec for completeness, ambiguity, missing requirements |
-| `@playbook-author` | Generate playbook + role structure from an approved spec |
-| `@test-author` | Generate Molecule scenarios from spec requirements |
-| `@security-reviewer` | Review for regulated-environment security posture |
-| `@tutor` | Onboard new engineers; explain SDD concepts using real repo examples |
+| `spec-reviewer` | Review a spec for completeness, ambiguity, missing requirements |
+| `playbook-author` | Generate playbook + role structure from an approved spec |
+| `test-author` | Generate Molecule scenarios from spec requirements |
+| `security-reviewer` | Review for regulated-environment security posture |
+| `tutor` | Onboard new engineers; explain SDD concepts using real repo examples |
+
+Definitions live in `.claude/agents/`.
 
 ---
 

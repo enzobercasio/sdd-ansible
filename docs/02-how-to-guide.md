@@ -1,10 +1,10 @@
-# How-To Guide: Spec-Driven Ansible with Cursor
+# How-To Guide: Spec-Driven Ansible with Claude Code
 
 > Step-by-step workflow for engineers using this kit day-to-day.
 
 ## Prerequisites
 
-- [Cursor](https://cursor.com) installed
+- Claude Code installed (`npm install -g @anthropic-ai/claude-code`)
 - Ansible 2.16+ (`ansible --version`)
 - ansible-lint 24+ (`pip install ansible-lint`)
 - Molecule with Docker driver (`pip install molecule molecule-plugins[docker]`)
@@ -13,13 +13,14 @@
 
 ## The Daily Workflow
 
-### Step 1: Open the Repo in Cursor
+### Step 1: Open Claude Code in the Repo
 
 ```bash
 cd ~/work/automation-sdd
+claude
 ```
 
-Open the folder in Cursor (File → Open Folder). The `@sdd-core` rule applies automatically via `.cursor/rules/sdd-core.mdc` (`alwaysApply: true`). You do not need to paste project memory into every session.
+The first thing Claude Code does is read `CLAUDE.md`. You don't need to remind it — that's the point of CLAUDE.md.
 
 ### Step 2: Start with Intent, Not Code
 
@@ -29,14 +30,14 @@ Open the folder in Cursor (File → Open Folder). The `@sdd-core` rule applies a
 **Good first prompt:**
 > "I need to automate monthly RHEL security patching. Help me draft a spec — risk tier is medium, target is the `webservers` group, and we have a maintenance window of 22:00–04:00 SGT."
 
-The good prompt gives Cursor enough context to:
+The good prompt gives Claude Code enough context to:
 - Pick the right template (BASE-SPEC-TEMPLATE)
 - Apply the right overrides (RHEL → no use-case override needed)
 - Ask the right clarifying questions
 
 ### Step 3: Iterate on the Spec
 
-Cursor will produce a draft spec. Read it carefully — **the spec is the contract**. If anything is wrong, fix it now, before code generation.
+Claude Code will produce a draft spec. Read it carefully — **the spec is the contract**. If anything is wrong, fix it now, before code generation.
 
 ```
 > The spec looks good, but REQ-3 should specify SGT timezone explicitly
@@ -61,11 +62,12 @@ git commit -m "[AUTO-2026-0042] Spec approved: RHEL patching automation"
 ### Step 4: Generate the Playbook
 
 ```
-> The spec AUTO-2026-0042 is approved. @playbook-author generate the role
-> and playbook. Make sure all four invariants are satisfied before you finish.
+> The spec AUTO-2026-0042 is approved. Use the playbook-author sub-agent
+> to generate the role and playbook. Make sure all four invariants are
+> satisfied before you finish.
 ```
 
-Cursor will:
+Claude Code will:
 
 1. Read `BEST-PRACTICES-SPEC.md`, applicable team/use-case overrides, and `AUTO-2026-0042-*.md`
 2. Scaffold the role under `roles/rhel_patching/`
@@ -78,11 +80,11 @@ Cursor will:
 ### Step 5: Generate the Tests
 
 ```
-> @test-author Generate Molecule scenarios for AUTO-2026-0042.
-> Each REQ in the spec must have at least one scenario.
+> Use the test-author sub-agent to generate Molecule scenarios for
+> AUTO-2026-0042. Each REQ in the spec must have at least one scenario.
 ```
 
-Cursor will:
+Claude Code will:
 
 1. Create `roles/rhel_patching/molecule/<scenario>/` for each requirement
 2. Write `molecule.yml`, `converge.yml`, and `verify.yml` for each
@@ -96,7 +98,7 @@ Cursor will:
 > If anything fails, diagnose and propose a fix.
 ```
 
-Cursor will execute Molecule, parse the output, and either:
+Claude Code will execute Molecule, parse the output, and either:
 - Report success ("All 5 scenarios passed")
 - Diagnose failures ("REQ-3 scenario fails because the maintenance window check uses UTC instead of SGT — fix in `tasks/main.yml` line 23")
 
@@ -113,7 +115,7 @@ Cursor will execute Molecule, parse the output, and either:
 
 ### Step 8: Merge and Deploy
 
-After human review and merge, AAP picks up the role from your project sync. The job template surveys are auto-synced from spec §4 (if you've completed Phase 3 of the implementation plan).
+After human review and merge, AAP picks up the role from your project sync. The job template surveys are auto-synced from spec §5 (if you've completed Phase 3 of the implementation plan).
 
 ---
 
@@ -127,7 +129,7 @@ After human review and merge, AAP picks up the role from your project sync. The 
 > would change in the playbook and tests.
 ```
 
-Cursor will:
+Claude Code will:
 
 1. Read the existing spec
 2. Propose a `1.1` version with the new requirement
@@ -147,9 +149,9 @@ Once the retrospective spec is approved, you can refactor against it with confid
 ### Workflow: Onboarding a New Engineer
 
 ```
-@tutor Walk me through one complete spec-driven cycle using AUTO-2026-0001
-as the example. Show me the spec, then the playbook, then the tests,
-and explain the traceability.
+> I'm new to this repo. Walk me through one complete spec-driven cycle
+> using AUTO-2026-0001 as the example. Show me the spec, then the
+> playbook, then the tests, and explain the traceability.
 ```
 
 ### Workflow: Spec Drift Investigation
@@ -172,22 +174,21 @@ and explain the traceability.
 
 ---
 
-## Tips for Better Cursor Sessions
+## Tips for Better Claude Code Sessions
 
-### Tip 1: Keep `@sdd-core` Current
+### Tip 1: Keep CLAUDE.md Current
 
-When the team agrees on a new convention, update `.cursor/rules/sdd-core.mdc`. The rule applies every session — it's free continuous improvement.
+When the team agrees on a new convention, update CLAUDE.md. Claude Code reads it every session — it's free continuous improvement.
 
-### Tip 2: Use Rules Deliberately
+### Tip 2: Use Sub-Agents Deliberately
 
-Specialised rules are for well-defined tasks:
-- `@spec-reviewer` for spec quality reviews
-- `@playbook-author` for generation
-- `@test-author` for test generation
-- `@security-reviewer` for regulated reviews
-- `@tutor` for onboarding (read-only)
+Sub-agents are specialised contexts. Use them when the task is well-defined:
+- `spec-reviewer` for spec quality reviews
+- `playbook-author` for generation
+- `test-author` for test generation
+- `security-reviewer` for regulated reviews
 
-For exploratory work or cross-cutting changes, use the default agent with `@sdd-core` already applied.
+For exploratory work or cross-cutting changes, just use Claude Code directly.
 
 ### Tip 3: Commit the Spec First
 
@@ -201,10 +202,10 @@ commit 3: [AUTO-2026-0042] Add Molecule scenarios
 
 The history reads like the workflow itself.
 
-### Tip 4: Ask Cursor to Self-Check
+### Tip 4: Ask Claude Code to Self-Check
 
 ```
-> Before you finish, run through the "done" checklist from @sdd-core
+> Before you finish, run through the "done" checklist from CLAUDE.md
 > and tell me which items are complete and which are not.
 ```
 
@@ -214,9 +215,9 @@ Instead of: *"Use my preferred style for variables"*
 
 Do: *"Look at roles/user_management/ for our team's style conventions, then apply the same patterns to this new role."*
 
-### Tip 6: Plan Before Complex Changes
+### Tip 6: Use Plan Mode for Complex Changes
 
-For any change touching multiple roles, ask Cursor to plan first:
+For any change touching multiple roles, ask Claude Code to plan first:
 
 ```
 > Before making any changes, produce a plan: which files will change,
@@ -227,9 +228,9 @@ For any change touching multiple roles, ask Cursor to plan first:
 
 ## Troubleshooting
 
-### "Cursor suggested a deprecated module"
+### "Claude Code suggested a deprecated module"
 
-Update your `BEST-PRACTICES-SPEC.md` to explicitly forbid deprecated modules. Cursor reads the spec hierarchy first.
+Update your `BEST-PRACTICES-SPEC.md` to explicitly forbid deprecated modules. Claude Code reads the spec first.
 
 ### "ansible-lint passes but the playbook doesn't work"
 
@@ -237,7 +238,7 @@ Add a `pre-merge` Molecule scenario that runs `ansible-playbook --check` against
 
 ### "The generated playbook doesn't match our team's style"
 
-You haven't authored a `TEAM-<name>-overrides.md` yet. Spend an hour codifying the team's conventions and Cursor will respect them.
+You haven't authored a `TEAM-<name>-overrides.md` yet. Spend an hour codifying the team's conventions and Claude Code will respect them.
 
 ### "The spec is too long for our use case"
 
@@ -257,13 +258,13 @@ This usually means a missing override layer. Either:
 
 Defeats the entire purpose. The spec is a contract, not a description.
 
-### ❌ Using Cursor as a YAML autocompleter
+### ❌ Using Claude Code as a YAML autocompleter
 
-If you're only accepting inline completions without a spec, you're skipping the discipline. Use the spec.
+If you're just hitting tab to accept suggestions, you're using it like Lightspeed without the discipline. Use the spec.
 
 ### ❌ Skipping the human review of generated specs
 
-Cursor is capable but not infallible. The spec must be human-approved.
+Claude Code is excellent but not infallible. The spec must be human-approved.
 
 ### ❌ Treating overrides as a backdoor
 
@@ -278,7 +279,7 @@ Verify scenarios actually fail when the implementation is wrong. Negative tests 
 ## Where to Get Help
 
 - Spec writing → `docs/03-spec-authoring-guide.md`
-- Better prompts → `docs/04-cursor-prompting.md`
+- Better prompts → `docs/04-claude-code-prompting.md`
 - Examples → `specs/examples/`
 - Team patterns → `specs/team-overrides/`
 - CoE escalation → your CoE lead (the spec authority)
