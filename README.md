@@ -260,8 +260,8 @@ Six patterns cover most day-to-day work. Full prompts and step-by-step detail fo
 
 ## Note
 
-This kit is designed for a CoE to publish, a CoP to consume, and a teams to operate against.
+This kit is designed for a CoE to publish, a CoP to consume, and teams to operate against.
 
 The audit story is the differentiator: **every change traces from approved spec → reviewed PR → tested role → AAP-gated execution**, all in Git, all in plain text, all auditable.
 
-Not all workflows have been tested. This is an in-progress framework.
+Not all workflows have been tested. This framework is in progress.
