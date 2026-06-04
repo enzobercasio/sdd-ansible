@@ -43,40 +43,48 @@ Only continue after the user confirms. Once the draft is generated, end with:
 
 ### Step-by-step protocol
 
+At every step, include concrete recommendations or suggestions alongside each question — offer an example answer, a common default, or a "good starting point" so the user has something to react to rather than a blank prompt. Tailor suggestions to what the user has already told you.
+
 **Step 0 — Frontmatter**
-Ask:
-- What is the automation for? (derives `title` and `spec_id` suggestion)
-- Which team owns this? (sets `team:`, triggers override lookup)
-- Is this a specific use case (EDA, network, security)? (sets `use_case:`)
-- Which environments does this target? (`dev` / `staging` / `prod`)
+Ask, and suggest a reasonable value for each field based on the user's description:
+- What is the automation for? (derive a `title` suggestion and propose a `spec_id` like `AUTO-2026-NNNN`)
+- Which team owns this? (suggest the most likely team given the use case; list the available teams if known)
+- Is this a specific use case (EDA, network, security)? (suggest one if the description implies it)
+- Which environments does this target? (suggest `[dev, staging, prod]` as the default starting point)
 
 **Step 1 — §1 Intent**
 Ask: "In one or two sentences, what business outcome does this automation achieve? Focus on the *why*, not the how."
-Rephrase the answer into a clean intent paragraph and confirm.
+Before the user answers, offer a draft intent based on their description so far — e.g. *"Something like: 'Reduce manual effort in X by automating Y, ensuring Z' — does that capture it, or would you phrase it differently?"*
+Rephrase their final answer into a clean intent paragraph and confirm.
 
 **Step 2 — §2 Scope**
 Ask: "What is explicitly in scope?" then "What is out of scope — what should this automation never touch or handle?"
+Suggest likely in-scope items based on the use case, and proactively propose common out-of-scope guards (e.g. "Should we explicitly exclude production hosts in the first version?" or "Should DNS/firewall changes be out of scope?").
 List both. Confirm before moving on.
 
 **Step 3 — §3 Requirements**
 For each requirement the user describes, rewrite it in EARS notation and tag it `REQ-N`. Ask:
 - "Is this always true, event-driven ('when X'), state-driven ('while X'), or an unwanted-behaviour guard ('if X, then')?"
 - "What is the measurable acceptance criterion for this requirement?"
+After each requirement, suggest one or two additional requirements the user may have overlooked (e.g. idempotency, validation of inputs, notification on failure). Frame them as: *"You may also want a requirement for X — want to add it?"*
 Continue prompting for more requirements until the user says they're done.
 
 **Step 4 — §4 Inputs**
 Ask: "What variables does this automation need at runtime? These become the AAP job template survey fields."
-For each variable confirm: type, required/optional, default value, and any validation rule.
+For each variable, suggest a sensible type, default, and validation rule before asking the user to confirm — e.g. *"For `target_hosts`, I'd suggest: type string, required, no default, validated against a known group list. Does that work?"*
+Also suggest commonly needed inputs the user may have missed (e.g. `dry_run: bool`, `notification_email: string`).
 
 **Step 5 — §5 Acceptance Criteria**
-Derive acceptance criteria from the requirements already collected. Present them and ask for additions or corrections. Note: if Molecule tests are added later, these become `assert` tasks in `verify.yml`.
+Derive acceptance criteria from the requirements already collected. Present a full draft set and ask for additions or corrections — don't present a blank table. Note: if Molecule tests are added later, these become `assert` tasks in `verify.yml`.
 
 **Step 6 — §6 Failure Modes**
 Ask: "What can go wrong? For each failure: how is it detected, what does the playbook do, and which requirement does it cover?"
 Also ask: "What is the rollback procedure if this automation causes a regression?"
+Suggest common failure modes for the use case before the user answers — e.g. for patching: *"Common ones to consider: host unreachable, package repo unavailable, service fails to restart after patch. Want to start with these?"*
 
 **Step 7 — §7 Approvals**
 Ask: "Who is the team lead approver?" Leave other fields blank for the user to fill after review.
+Suggest the team lead name if it has come up earlier in the conversation.
 
 **Final step — Write the file**
 Show a summary: "I'm about to write `specs/AUTO-YYYY-NNNN-<title>.md` with status: `draft`. Here's what will be in it: [summary]." Wait for confirmation, then write the file.

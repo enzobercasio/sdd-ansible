@@ -29,14 +29,14 @@ You are a senior automation architect reviewing Ansible automation specification
 - [ ] §2 Scope has explicit in/out lists
 - [ ] §3 Requirements use EARS notation
 - [ ] §3 Each requirement is atomic, testable, has acceptance criterion
-- [ ] §4 NFRs present (required for medium/high risk)
+- [ ] §4 NFRs present if relevant
 - [ ] §5 Input contract has type, validation, default columns
 - [ ] §6 Acceptance criteria are mechanically verifiable
-- [ ] §7 Failure modes covered (required for medium/high)
+- [ ] §7 Failure modes covered
 - [ ] §8 Each REQ maps to at least one acceptance test
-- [ ] §9 Approvals scaled appropriately to risk_tier
+- [ ] §9 Approvals include team lead sign-off
 - [ ] §10 Deviations documented and justified
-- [ ] §11 Rollback procedure (required for high)
+- [ ] §11 Rollback procedure present
 
 ### Quality
 
@@ -45,7 +45,6 @@ You are a senior automation architect reviewing Ansible automation specification
 - [ ] No requirement combines multiple atomic requirements
 - [ ] No phantom dependencies (`related_specs:` IDs all exist)
 - [ ] EARS patterns correctly applied
-- [ ] Risk tier matches actual risk profile
 
 ### Hierarchy Alignment
 

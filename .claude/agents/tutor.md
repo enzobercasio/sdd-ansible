@@ -38,7 +38,7 @@ Explain the four invariants (from `CLAUDE.md`):
 1. Spec exists before code
 2. Spec is versioned and reviewed
 3. Code is traceable to spec
-4. Tests verify code against spec (optional but recommended for medium/high risk)
+4. Tests verify code against spec (optional but recommended)
 
 Show the closed loop in `README.md` — point out that the spec is not a document that gets written and forgotten; it's a living contract that governance flows through.
 
@@ -51,7 +51,7 @@ Walk through `specs/examples/AUTO-2026-0019-user-onboarding.md` section by secti
 - **§4 Inputs** — these become AAP job template survey fields. Every variable the engineer will be asked to fill in at runtime lives here.
 - **§5 Acceptance Criteria** — these become `assert` tasks in Molecule `verify.yml`. If you can't write a test for it, the requirement is too vague.
 - **§6 Failure Modes** — what can go wrong, how is it detected, what does the playbook do?
-- **§7 Approvals** — who signs off, scaled to risk tier.
+- **§7 Approvals** — who signs off.
 
 ### 3. The spec hierarchy — why four layers?
 
@@ -98,25 +98,7 @@ Bad: "User is created successfully"
 
 Show `examples/roles/user_onboarding/molecule/default/verify.yml` to make this concrete.
 
-### 6. Risk tiers — how do I pick the right one?
-
-Walk through the decision:
-
-| Question | Points toward |
-|---|---|
-| Does this run on production hosts? | medium or high |
-| Can it delete data or remove access? | high |
-| Does it affect network connectivity? | high |
-| Is it reversible without a runbook? | low or medium |
-| Does it run unattended (no human at keyboard)? | +1 tier |
-| Has it been run in this environment before? | -1 tier |
-
-Choosing too low: fewer safeguards, faster to approve, but higher blast radius if something goes wrong.
-Choosing too high: more approvers, slower to deploy, but full audit trail and rollback documentation.
-
-Honest answer: when in doubt, go one tier higher. You can always relax a risk tier in a spec amendment; you can't undo a production incident.
-
-### 7. How traceability works in the generated code
+### 6. How traceability works in the generated code
 
 Open `examples/playbooks/onboard_users.yml` and `examples/roles/user_onboarding/tasks/main.yml` together. Point out:
 - The playbook declares `spec_id: "AUTO-2026-0019"` — this links the execution to the spec
@@ -130,7 +112,7 @@ Explain why this matters for auditors: given any AAP job log, they can trace bac
 Walk through the flow from `CLAUDE.md` §"Spec Creation":
 1. Draft (Claude Code guides you through sections or auto-drafts)
 2. `spec-reviewer` sub-agent checks for completeness and quality issues
-3. Human approvers sign off in §7 (scaled to risk tier)
+3. Human approvers sign off in §7
 4. `status: approved` is set and the spec is committed alone — before any code
 5. Only then does `playbook-author` proceed
 
@@ -143,7 +125,7 @@ Explain the "spec commit before code" rule: the Git history should be readable a
 | `spec-reviewer` | Before approving any spec | Independent quality check — finds ambiguity, missing requirements, hierarchy conflicts |
 | `playbook-author` | After `status: approved` | Generates role + playbook from spec, runs lint, self-audits against Definition of Done |
 | `test-author` | When you want Molecule coverage | Generates test scenarios mapped to spec requirements |
-| `security-reviewer` | Before merging medium/high risk | Security posture review with severity-graded findings |
+| `security-reviewer` | Before merging | Security posture review with severity-graded findings |
 | `tutor` | Learning or onboarding | Explains concepts, walks through examples — you are here |
 
 ---
@@ -185,7 +167,7 @@ When a question is outside both CoE scope and official documentation:
 Many Ansible users confuse upstream (community.general, Ansible Galaxy roles) with Red Hat certified (Red Hat Automation Hub collections). Make this distinction explicit when it comes up:
 
 - **Red Hat certified collections** (sourced from `console.redhat.com/ansible/automation-hub`) — Red Hat tests, supports, and documents these. They are in scope for the CoE framework.
-- **Upstream community collections** (sourced from `galaxy.ansible.com`) — not supported by Red Hat. `BEST-PRACTICES-SPEC.md` REQ-C2 restricts their use. Flag any community collection reference with: *"This is a community collection, not Red Hat certified. Check with your team lead before using it in a risk_tier: medium or high spec."*
+- **Upstream community collections** (sourced from `galaxy.ansible.com`) — not supported by Red Hat. `BEST-PRACTICES-SPEC.md` REQ-C2 restricts their use. Flag any community collection reference with: *"This is a community collection, not Red Hat certified. Check with your team lead before using it in any spec."*
 
 ---
 
