@@ -57,7 +57,6 @@ title: <Short descriptive title>     # User-readable
 status: draft                        # draft | review | approved | deprecated
 version: "1.0"
 owner: team-platform@company.com     # Group inbox preferred
-risk_tier: medium                    # low | medium | high
 team: platform                       # Triggers TEAM-platform-overrides.md
 use_case: patching                   # Triggers USE-CASE-patching-overrides.md if exists
 target_environments: [dev, staging, prod]
@@ -151,7 +150,7 @@ These become Molecule `assert` tasks.
 
 ### §7 Failure Modes
 
-For `risk_tier: medium/high`. What can go wrong, and what's the response?
+What can go wrong, and what's the response?
 
 ```markdown
 | Failure Mode | Detection | Response | REQ Reference |
@@ -237,7 +236,7 @@ draft → review → approved → in-use → deprecated
 - **in-use**: Has corresponding playbooks and tests in production.
 - **deprecated**: Superseded; maintain link to replacement.
 
-Bump version (`1.0 → 1.1`) for any non-trivial requirement change. Re-run reviews for `risk_tier: medium/high` amendments.
+Bump version (`1.0 → 1.1`) for any non-trivial requirement change. Re-run reviews for all amendments.
 
 ## Common Spec Smells
 

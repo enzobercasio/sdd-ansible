@@ -21,7 +21,6 @@ The CLAUDE.md handles 1–4 implicitly for SDD work. Your job is to refine.
 I need to automate <use case>. Help me draft a spec using BASE-SPEC-TEMPLATE.
 
 Context:
-- Risk tier: <low/medium/high>
 - Team: <team>
 - Target environment: <dev/staging/prod>
 - Constraints: <regulatory, technical, operational>

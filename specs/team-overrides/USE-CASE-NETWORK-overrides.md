@@ -154,7 +154,7 @@ For network use-cases, Molecule tests run against:
 - ContainerLab or similar virtual topology tools
 - Mock-driver scenarios for unit-style verification
 
-Production-realistic testing requires investment but is non-negotiable for `risk_tier: medium/high`.
+Production-realistic testing requires investment but is non-negotiable for network automation.
 
 ## §7 Override Authority
 

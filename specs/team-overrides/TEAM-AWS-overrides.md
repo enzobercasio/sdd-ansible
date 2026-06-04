@@ -58,7 +58,7 @@ Capture AWS automation conventions once here so individual specs don't repeat th
 - **REQ-AWS-30**: Security group rules must be managed with `amazon.aws.ec2_security_group`. Do not manage security group rules by calling the AWS CLI via `ansible.builtin.command:`.
 - **REQ-AWS-31**: Security group rules must specify CIDR ranges as precisely as possible. `0.0.0.0/0` ingress rules require security team sign-off and documentation in the spec.
 - **REQ-AWS-32**: VPC and subnet IDs must be resolved from account/region/environment context at runtime using `amazon.aws.ec2_vpc_net_info` and `amazon.aws.ec2_vpc_subnet_info` — do not hardcode VPC or subnet IDs in role defaults. Hardcoded IDs break portability across environments.
-- **REQ-AWS-33**: Route table and internet gateway modifications require `risk_tier: high` and CAB approval. Network path changes can cause production outages that are difficult to reverse quickly.
+- **REQ-AWS-33**: Route table and internet gateway modifications require CAB approval. Network path changes can cause production outages that are difficult to reverse quickly.
 
 ### Dynamic Inventory
 
@@ -70,8 +70,8 @@ Capture AWS automation conventions once here so individual specs don't repeat th
 
 - **REQ-AWS-50**: Tasks that terminate or delete AWS resources (`state: absent`, `terminate_instances:`) must be gated behind a variable that defaults to `false` — e.g., `aws_allow_termination: false`. The spec must document the expected behavior when this variable is set.
 - **REQ-AWS-51**: EBS volume deletion must explicitly set `delete_on_termination:` to match the spec's intent. Do not rely on AMI launch defaults.
-- **REQ-AWS-52**: RDS instance deletion must set `skip_final_snapshot: false` for `risk_tier: medium` and `risk_tier: high` — always create a final snapshot before deletion. Document the snapshot naming convention in the spec.
-- **REQ-AWS-53**: Auto Scaling Group (ASG) operations must respect the current desired capacity and min/max bounds. Do not modify ASG capacity outside a scheduled maintenance window for `risk_tier: high` stacks.
+- **REQ-AWS-52**: RDS instance deletion must set `skip_final_snapshot: false` — always create a final snapshot before deletion. Document the snapshot naming convention in the spec.
+- **REQ-AWS-53**: Auto Scaling Group (ASG) operations must respect the current desired capacity and min/max bounds. Do not modify ASG capacity outside a scheduled maintenance window.
 
 ### CloudFormation & Infrastructure as Code
 
@@ -109,7 +109,7 @@ Capture AWS automation conventions once here so individual specs don't repeat th
 - ❌ Hardcoded VPC IDs, subnet IDs, or AMI IDs in role defaults
 - ❌ Targeting IaC-managed resources with state-changing Ansible tasks
 - ❌ EC2 instance termination without a guard variable defaulting to `false`
-- ❌ RDS deletion without a final snapshot for `risk_tier: medium/high`
+- ❌ RDS deletion without a final snapshot
 - ❌ Using the `community.aws` collection instead of `amazon.aws` when `amazon.aws` provides the module
 
 ---
@@ -135,7 +135,7 @@ Deviations from this document require:
 1. Documentation in the spec's §7 Approvals → Deviations table.
 2. Sign-off from the cloud platform team lead.
 3. For IAM and networking deviations (REQ-AWS-3, REQ-AWS-31, REQ-AWS-33): additional sign-off from the security team.
-4. For destructive resource operations (REQ-AWS-50 through REQ-AWS-53): CAB approval for `risk_tier: high`.
+4. For destructive resource operations (REQ-AWS-50 through REQ-AWS-53): CAB approval required.
 
 ---
 

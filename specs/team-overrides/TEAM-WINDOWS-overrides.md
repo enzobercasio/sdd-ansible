@@ -65,7 +65,7 @@ Capture Windows automation conventions once here so individual specs don't repea
 - **REQ-WIN-30**: Windows software installations must use one of: `ansible.windows.win_package` (for MSI/EXE packages) or `chocolatey.chocolatey.win_chocolatey` (for Chocolatey packages). Direct invocation of `msiexec` via `win_shell` is forbidden unless `win_package` cannot handle the installer.
 - **REQ-WIN-31**: Chocolatey must be installed via `chocolatey.chocolatey.win_chocolatey_feature` before any `win_chocolatey` task runs. Do not assume Chocolatey is present. Include a pre-flight check.
 - **REQ-WIN-32**: Windows Updates must be managed with `ansible.windows.win_updates`. Reboot handling must use `ansible.windows.win_reboot` with appropriate `reboot_timeout:` and `post_reboot_delay:` values (minimum 60 seconds for domain-joined hosts).
-- **REQ-WIN-33**: Software version pinning is required for `risk_tier: medium` and `risk_tier: high` — always specify `version:` or `product_id:` in `win_package` tasks.
+- **REQ-WIN-33**: Software version pinning is required — always specify `version:` or `product_id:` in `win_package` tasks.
 
 ### Windows Features & Roles
 

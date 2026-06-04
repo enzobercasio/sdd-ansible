@@ -53,8 +53,8 @@ Network devices present fundamentally different automation challenges than serve
 
 ### Change Safety
 
-- **REQ-NET-20**: Network automation targeting production devices is always `risk_tier: medium` or `risk_tier: high`. There is no `risk_tier: low` for production network changes — even small config changes can cause outages.
-- **REQ-NET-21**: Changes that modify routing, BGP neighbors, OSPF areas, VLANs, or spanning tree must be `risk_tier: high` and require CAB approval.
+- **REQ-NET-20**: Network automation targeting production devices always requires a rollback procedure and failure mode documentation. Even small config changes can cause outages.
+- **REQ-NET-21**: Changes that modify routing, BGP neighbors, OSPF areas, VLANs, or spanning tree require CAB approval.
 - **REQ-NET-22**: All network change playbooks must implement a **commit confirmation** pattern where available (Junos `confirmed-commit`, IOS-XR commit confirmed). For platforms without native commit confirmation, implement a post-change verification step that rollbacks via the backup if validation fails.
 - **REQ-NET-23**: Playbooks that could interrupt management plane connectivity (changing management IP, ACLs on management interface, shutting interfaces) must implement an out-of-band (OOB) verification step. Document the OOB access method in the spec §6 Failure Modes.
 - **REQ-NET-24**: Serial execution is the default for network automation. Never run network changes in parallel (`strategy: free` or high `forks:`) unless explicitly justified. Parallel changes to interconnected devices can produce unpredictable states.
@@ -72,7 +72,7 @@ Network devices present fundamentally different automation challenges than serve
 Network modules present idempotency challenges not present in server automation:
 
 - **REQ-NET-40**: Use resource modules (`cisco.ios.ios_vlans`, `arista.eos.eos_bgp_global`, etc.) instead of `<vendor>_config` wherever available. Resource modules implement idempotency by comparing desired state to current device state — `<vendor>_config` does a text diff and is less reliable.
-- **REQ-NET-41**: `<vendor>_config` tasks must use `diff: true` in check mode to show what will change before committing. Always run `--check` first for `risk_tier: high` changes.
+- **REQ-NET-41**: `<vendor>_config` tasks must use `diff: true` in check mode to show what will change before committing. Always run `--check` before applying changes.
 - **REQ-NET-42**: Tasks using `<vendor>_command` to push raw CLI are not idempotent by nature. Wrap them in a `when:` condition that first checks device state via a `<vendor>_facts` task. Document the state check logic in the task comment.
 - **REQ-NET-43**: `changed_when:` must be defined for all `<vendor>_command` tasks. Use parsed command output or `diff_lines` to determine whether a change actually occurred.
 
@@ -102,7 +102,6 @@ Network modules present idempotency challenges not present in server automation:
 
 ## §4 Forbidden (in addition to universal list)
 
-- ❌ `risk_tier: low` for production network device changes
 - ❌ Network credentials in inventory, group_vars, or role defaults
 - ❌ Applying configuration changes without a pre-change backup
 - ❌ `strategy: free` or forks > 1 without documented justification

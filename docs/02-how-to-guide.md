@@ -28,7 +28,7 @@ The first thing Claude Code does is read `CLAUDE.md`. You don't need to remind i
 > "Write me an Ansible playbook to patch RHEL servers"
 
 **Good first prompt:**
-> "I need to automate monthly RHEL security patching. Help me draft a spec — risk tier is medium, target is the `webservers` group, and we have a maintenance window of 22:00–04:00 SGT."
+> "I need to automate monthly RHEL security patching. Help me draft a spec — target is the `webservers` group, and we have a maintenance window of 22:00–04:00 SGT."
 
 The good prompt gives Claude Code enough context to:
 - Pick the right template (BASE-SPEC-TEMPLATE)
@@ -110,7 +110,7 @@ Claude Code will execute Molecule, parse the output, and either:
 > - Summary of what was implemented
 > - Test coverage report (REQ → scenario mapping)
 > - Any deviations from the spec
-> - Risk assessment based on spec risk_tier
+> - Risk assessment based on the spec
 ```
 
 ### Step 8: Merge and Deploy
@@ -242,7 +242,7 @@ You haven't authored a `TEAM-<name>-overrides.md` yet. Spend an hour codifying t
 
 ### "The spec is too long for our use case"
 
-You can use a "lite" template for `risk_tier: low` specs. Create `BASE-SPEC-TEMPLATE-LITE.md` with only the essential sections.
+You can use a "lite" template for simple specs. Create `BASE-SPEC-TEMPLATE-LITE.md` with only the essential sections.
 
 ### "Two specs conflict with each other"
 
@@ -272,7 +272,7 @@ Don't put a constraint in a team override just to avoid a difficult discussion w
 
 ### ❌ Generating tests that always pass
 
-Verify scenarios actually fail when the implementation is wrong. Negative tests are non-negotiable for `risk_tier: medium/high`.
+Verify scenarios actually fail when the implementation is wrong. Negative tests are non-negotiable.
 
 ---
 

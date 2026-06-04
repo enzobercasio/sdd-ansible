@@ -31,7 +31,7 @@ Capture platform team conventions once here so individual specs don't repeat the
 
 ### Change communication
 
-- **REQ-PT-10**: `risk_tier: medium/high` playbooks must post a structured Slack message to `#platform-changes` at start and end, including: `spec_id`, AAP job URL, executor, target group, expected duration.
+- **REQ-PT-10**: All playbooks must post a structured Slack message to `#platform-changes` at start and end, including: `spec_id`, AAP job URL, executor, target group, expected duration.
 - **REQ-PT-11**: Use `community.general.slack` for Slack messages, not raw webhooks.
 
 ### CMDB integration

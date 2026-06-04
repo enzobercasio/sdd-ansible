@@ -3,7 +3,6 @@ spec_id: AUTO-YYYY-NNNN
 title: <Short descriptive title>
 status: draft  # draft | review | approved | in-use | deprecated
 owner: <team-email@company.com>
-risk_tier: low  # low | medium | high
 team: <team-name>          # triggers TEAM-<name>-overrides.md if one exists
 use_case: <use-case-tag>   # triggers USE-CASE-<tag>-overrides.md if one exists
 target_environments: [dev, staging, prod]
@@ -45,7 +44,7 @@ _One paragraph. Why does this automation exist — what business outcome does it
 - **REQ-2**: When …, the system shall …  — *acceptance: \<criterion\>*
 - **REQ-3**: If …, then the system shall …  — *acceptance: \<criterion\>*
 
-> **Non-functional requirements** (`risk_tier: medium/high` only — skip for low):
+> **Non-functional requirements** (optional — add if relevant):
 > - **NFR-1**: <Performance — e.g., "Complete within 4-hour window for up to 200 hosts">
 > - **NFR-2**: <Reliability — e.g., "Succeed on first attempt for >95% of invocations">
 
@@ -74,13 +73,11 @@ _One paragraph. Why does this automation exist — what business outcome does it
 
 ## §6 Failure Modes
 
-> Required for `risk_tier: medium/high`. Summarise for `low`.
-
 | Failure | How detected | Response | REQ |
 |---|---|---|---|
 | <What can go wrong> | <How we detect it> | <What the playbook does> | REQ-N |
 
-**Rollback** (`risk_tier: high` — describe how to undo this automation if it causes a regression):
+**Rollback** (describe how to undo this automation if it causes a regression):
 
 _<Step-by-step rollback or link to runbook>_
 
@@ -88,14 +85,7 @@ _<Step-by-step rollback or link to runbook>_
 
 ## §7 Approvals
 
-> Required approvals scale with `risk_tier`:
-> - `low`: team lead
-> - `medium`: team lead + security review
-> - `high`: team lead + security review + CAB
-
 - [ ] Team lead — <name> (<date>)
-- [ ] Security review — <reviewer> (<date>)  _(medium/high only)_
-- [ ] CAB — <body> (<date>)  _(high only)_
 
 **Deviations from best practices** (document any rule in `BEST-PRACTICES-SPEC.md` this spec cannot follow):
 

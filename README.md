@@ -23,10 +23,10 @@ Claude Code walks you through each spec section interactively — one section at
 ### Three-layer spec hierarchy
 Requirements are inherited in order: `BEST-PRACTICES-SPEC.md` (universal baseline) → `TEAM-<name>-overrides.md` (team conventions) → `USE-CASE-<x>-overrides.md` (domain-specific rules) → individual spec. Constraints defined once at a higher layer automatically apply to every playbook that inherits it. Conflicts are flagged and documented in the spec's Deviations table.
 
-### Risk-tier scaled approvals
-Every spec declares `risk_tier: low | medium | high`. Approval requirements scale accordingly — team lead only for low, adding security review for medium, adding CAB sign-off for high. The approval checklist lives inside the spec file itself, versioned in Git alongside the code it governs.
+### Spec-gated approvals
+Every spec includes an approval checklist signed off by the team lead before code is generated. The checklist lives inside the spec file itself, versioned in Git alongside the code it governs.
 
-### Four specialised sub-agents
+### Five specialised sub-agents
 Claude Code sub-agents handle distinct stages of the workflow:
 - **`spec-reviewer`** — audits a spec for completeness, ambiguity, and testability before any code is written
 - **`playbook-author`** — generates lint-clean, traceable playbooks and roles from an approved spec
@@ -41,7 +41,7 @@ Every generated play declares `spec_id`, every role's `meta/main.yml` embeds `sp
 The `.ansible-lint` configuration enforces a production-grade profile with additional rules aligned to spec requirements: FQCN module names, variable naming conventions, no-log on secrets, risky file permissions, and more. Every lint skip must be justified — unannotated skips are treated as technical debt.
 
 ### Execution Environment-first testing
-`.vscode/settings.json` configures the VS Code Ansible extension to run all playbook executions and Molecule tests inside the AAP-supported RHEL 9 EE. Local test results match what AAP produces in production. Molecule testing is optional — recommended for `risk_tier: medium/high`.
+`.vscode/settings.json` configures the VS Code Ansible extension to run all playbook executions and Molecule tests inside the AAP-supported RHEL 9 EE. Local test results match what AAP produces in production. Molecule testing is optional but recommended.
 
 ### AAP-ready role READMEs
 Every generated role README includes a complete AAP Usage section: job template field settings, a survey table mapped directly from spec §4 inputs, and an `aap job launch` CLI example. Testing instructions cover check-mode dry runs, `ansible-navigator` EE runs, and Molecule (where present).
@@ -170,7 +170,7 @@ Sub-agents are specialised Claude Code contexts invoked by name for well-defined
 
 **`security-reviewer.md`** — Reviews generated code for regulated-environment security posture.
 
-**`tutor.md`** — CoE-aware onboarding agent for engineers new to Ansible or SDD. Teaches concepts using the actual files in this repo as examples, explains the "why" behind every rule, and walks through real specs and roles at the learner's pace. Does not write or modify any files. Invoke with: `> Use the tutor sub-agent to walk me through how spec-driven development works.` Covers secrets handling, privilege management, input validation, network security, audit logging, supply-chain hygiene, and a structured threat model (compromised exec env, compromised credentials, replay attacks, lateral movement, data exfiltration). Returns severity-graded findings (`CRITICAL`/`HIGH`/`MEDIUM`/`LOW`) and a deployment verdict. Required for `risk_tier: medium/high` before merge.
+**`tutor.md`** — CoE-aware onboarding agent for engineers new to Ansible or SDD. Teaches concepts using the actual files in this repo as examples, explains the "why" behind every rule, and walks through real specs and roles at the learner's pace. Does not write or modify any files. Invoke with: `> Use the tutor sub-agent to walk me through how spec-driven development works.` Covers secrets handling, privilege management, input validation, network security, audit logging, supply-chain hygiene, and a structured threat model (compromised exec env, compromised credentials, replay attacks, lateral movement, data exfiltration). Returns severity-graded findings (`CRITICAL`/`HIGH`/`MEDIUM`/`LOW`) and a deployment verdict.
 
 ---
 
@@ -247,7 +247,7 @@ A spec-driven workflow must guarantee:
 1. **Spec exists before code** — no playbook PR is approved without a referenced spec
 2. **Spec is versioned and reviewed** — specs live in Git, go through PR review
 3. **Code is traceable to spec** — every play, role, and task references a spec_id
-4. *(Optional)* **Tests verify code against spec** — Molecule scenarios map to spec requirements; recommended for `risk_tier: medium/high`
+4. *(Optional)* **Tests verify code against spec** — Molecule scenarios map to spec requirements; recommended
 
 
 ## Workflows

@@ -4,7 +4,6 @@ title: Universal Ansible Playbook Best Practices
 status: approved
 version: "4.0"
 owner: automation-coe@company.com
-risk_tier: governance
 applies_to: all
 created: 2026-01-15
 last_reviewed: 2026-05-21
@@ -62,7 +61,7 @@ Every playbook must be: **correct** (does what its spec says), **idempotent** (s
 
 ### Error Handling & Rollback
 
-- **REQ-E1**: Every play targeting `risk_tier: medium` or `risk_tier: high` hosts must define an explicit rollback or recovery procedure in the spec (§6 Failure Modes). The playbook must reference this procedure in a task comment or role README.
+- **REQ-E1**: Every play must define an explicit rollback or recovery procedure in the spec (§6 Failure Modes). The playbook must reference this procedure in a task comment or role README.
 - **REQ-E2**: `ignore_errors: true` is forbidden unless accompanied by an explicit `failed_when:` condition that narrows the suppressed failure, and a documented recovery path in the spec.
 - **REQ-E3**: Long-running tasks (package installs, filesystem operations, data migrations) must implement a timeout via `async:` and `poll:` to prevent hung jobs blocking AAP workers.
 - **REQ-E4**: Pre-flight checks must run in a dedicated `pre_tasks:` block. If any pre-flight check fails, the play must exit cleanly without having made any changes.
@@ -73,20 +72,20 @@ Every playbook must be: **correct** (does what its spec says), **idempotent** (s
 - **REQ-L2**: Every playbook must log a session-end message in an `always:` block, containing the same fields plus final job status (passed / failed / changed counts where available).
 - **REQ-L3**: State-changing tasks must emit an audit message describing what changed, on which target, and the UTC timestamp. Use `ansible.builtin.debug:` or a dedicated logging role.
 - **REQ-L4**: Sensitive data must be redacted from all log output (`no_log: true` on the task). Never log secrets — even in `FAILED` task output.
-- **REQ-L5**: Audit logs from `risk_tier: medium` and `risk_tier: high` playbooks must be forwarded to a central log aggregator (Splunk, Elastic, or equivalent) configured by the team override. The BEST-PRACTICES layer does not mandate a specific aggregator — teams provide that via `TEAM-<name>-overrides.md`.
+- **REQ-L5**: Audit logs must be forwarded to a central log aggregator (Splunk, Elastic, or equivalent) configured by the team override. The BEST-PRACTICES layer does not mandate a specific aggregator — teams provide that via `TEAM-<name>-overrides.md`.
 
 ### Supply Chain & Collections
 
-- **REQ-C1**: All collections used in a playbook must be declared with an explicit minimum version in `requirements.yml`. Pinned versions are preferred for `risk_tier: high`.
+- **REQ-C1**: All collections used in a playbook must be declared with a pinned version in `requirements.yml`.
 - **REQ-C2**: Collections must be sourced from Red Hat Automation Hub (console.redhat.com) or the team's approved Automation Hub instance. Community Galaxy collections are only permitted if explicitly approved in the team override and pinned to a specific version.
 - **REQ-C3**: Execution Environments (EEs) used in production must be built from Red Hat-supported base images (`registry.redhat.io/ansible-automation-platform/ee-supported-rhel9:latest` or equivalent) and tracked in a `execution-environment.yml` in the repo. Custom EEs must be rebuilt when base image CVEs are patched.
-- **REQ-C4**: Roles sourced from Ansible Galaxy must not be used in `risk_tier: medium` or `risk_tier: high` playbooks unless reviewed, forked into the team repo, and treated as first-party code.
+- **REQ-C4**: Roles sourced from Ansible Galaxy must not be used unless reviewed, forked into the team repo, and treated as first-party code.
 
 ### Testing
 
 - **REQ-T1**: `ansible-lint` using the `production` profile must pass with zero violations before any merge. Skipped rules must be annotated inline with a justification (`# noqa: rule-id — reason`).
 - **REQ-T2**: `ansible-playbook --syntax-check` must pass for every playbook in the repo.
-- **REQ-T3**: For `risk_tier: medium` and `risk_tier: high` playbooks, at least one Molecule scenario must cover the happy path. Each `shall` requirement in the spec must map to at least one `assert` task in `verify.yml`.
+- **REQ-T3**: At least one Molecule scenario must cover the happy path. Each `shall` requirement in the spec must map to at least one `assert` task in `verify.yml`.
 - **REQ-T4**: Molecule tests must run inside the same Execution Environment used in production. Configure the VS Code Ansible extension (`.vscode/settings.json`) to point at the production EE — do not test against the local Python environment.
 - **REQ-T5**: Idempotency is verified by running the Molecule `converge` step twice and asserting zero changes on the second run. Molecule's built-in idempotency check (`molecule idempotence`) satisfies this requirement.
 
@@ -95,7 +94,7 @@ Every playbook must be: **correct** (does what its spec says), **idempotent** (s
 - **REQ-A1**: Every playbook designed for AAP execution must document a complete `AAP Usage` section in the role README: job template settings, survey fields mapped from spec §4, and a sample `aap job launch` CLI command.
 - **REQ-A2**: AAP survey fields must be validated at the AAP level (required vs optional, type, default) — these must match the `defaults/main.yml` variable definitions. Mismatches between survey and defaults cause silent runtime failures.
 - **REQ-A3**: Playbooks intended for unattended (scheduled) AAP execution must implement guard conditions — confirm target hosts are in the expected state before proceeding. Do not assume the previous run succeeded.
-- **REQ-A4**: `risk_tier: high` playbooks must use an AAP Workflow with an approval node before the job template executes. Document the approval node configuration in the role README.
+- **REQ-A4**: Playbooks with destructive or hard-to-reverse operations should use an AAP Workflow with an approval node before the job template executes. Document the approval node configuration in the role README.
 - **REQ-A5**: Job templates must set `LIMIT` to a specific group or host pattern — never run against `all` in production. The target group must be validated against a known-good list by a pre-flight `assert`.
 
 ---
@@ -108,7 +107,7 @@ No override makes these acceptable without CoE sign-off and a documented justifi
 - ❌ `ignore_errors: true` without an explicit `failed_when:` and a documented recovery plan
 - ❌ `validate_certs: false` in staging or production without a documented justification
 - ❌ `become: true` at playbook level when only a subset of tasks require elevation
-- ❌ `risk_tier: medium` or `risk_tier: high` changes without a rollback step in the spec
+- ❌ Changes without a rollback step in the spec
 - ❌ `with_items:`, `with_dict:`, `with_subelements:`, or any other deprecated `with_*` loop syntax
 - ❌ `any_errors_fatal: false` in plays with destructive tasks, without justification
 - ❌ Inline variable values that would cause `ansible-lint` to emit a `no-log-password` or `risky-file-permissions` violation
@@ -121,7 +120,7 @@ A team or spec may override any rule in §2 if:
 
 1. The deviation is documented in the spec's **§7 Approvals → Deviations table**.
 2. The justification is technical ("module X cannot guarantee idempotency"), not stylistic.
-3. The override is accepted by the appropriate approver (team lead for `risk_tier: low`, CoE for `risk_tier: medium/high`).
+3. The override is accepted by the appropriate approver (team lead or CoE, as required).
 
 **Precedence**: individual spec > use-case override > team override > this document.
 

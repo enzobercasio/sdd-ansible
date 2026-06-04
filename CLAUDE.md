@@ -29,7 +29,7 @@ Before drafting, present the following confirmation prompt:
 >
 > - The draft will be based only on the context you've provided so far. Missing context means assumptions — and assumptions in specs become defects in code.
 > - Requirements will be inferred from your description. They may be incomplete, incorrectly scoped, or missing edge cases that only you know about.
-> - Risk tier, team overrides, and use-case overlays will be guessed if not explicitly stated — verify these are correct before approving.
+> - Team overrides and use-case overlays will be guessed if not explicitly stated — verify these are correct before approving.
 > - **You must review every section of the generated spec before setting `status: approved`.** Auto-drafted specs are a starting point, not a finished contract.
 >
 > Shall I proceed with the auto-draft?
@@ -38,7 +38,6 @@ Only continue after the user confirms. Once the draft is generated, end with:
 
 > 📋 **Draft complete. Before approving this spec:**
 > - Read every section carefully — requirements you didn't intend may be present; requirements you need may be missing
-> - Check that the risk tier matches the actual blast radius of this automation
 > - Verify the §4 Inputs match what your AAP job template survey will collect
 > - Run the `spec-reviewer` sub-agent for an independent check before setting `status: approved`
 
@@ -47,7 +46,6 @@ Only continue after the user confirms. Once the draft is generated, end with:
 **Step 0 — Frontmatter**
 Ask:
 - What is the automation for? (derives `title` and `spec_id` suggestion)
-- What is the risk tier? (`low` / `medium` / `high`) — offer guidance if unsure
 - Which team owns this? (sets `team:`, triggers override lookup)
 - Is this a specific use case (EDA, network, security)? (sets `use_case:`)
 - Which environments does this target? (`dev` / `staging` / `prod`)
@@ -65,7 +63,6 @@ For each requirement the user describes, rewrite it in EARS notation and tag it 
 - "Is this always true, event-driven ('when X'), state-driven ('while X'), or an unwanted-behaviour guard ('if X, then')?"
 - "What is the measurable acceptance criterion for this requirement?"
 Continue prompting for more requirements until the user says they're done.
-Flag if `risk_tier: medium/high` and no NFRs have been defined.
 
 **Step 4 — §4 Inputs**
 Ask: "What variables does this automation need at runtime? These become the AAP job template survey fields."
@@ -74,16 +71,11 @@ For each variable confirm: type, required/optional, default value, and any valid
 **Step 5 — §5 Acceptance Criteria**
 Derive acceptance criteria from the requirements already collected. Present them and ask for additions or corrections. Note: if Molecule tests are added later, these become `assert` tasks in `verify.yml`.
 
-**Step 6 — §6 Failure Modes** *(skip for `risk_tier: low`)*
+**Step 6 — §6 Failure Modes**
 Ask: "What can go wrong? For each failure: how is it detected, what does the playbook do, and which requirement does it cover?"
-For `risk_tier: high`, also ask: "What is the rollback procedure if this automation causes a regression?"
+Also ask: "What is the rollback procedure if this automation causes a regression?"
 
 **Step 7 — §7 Approvals**
-Pre-fill the approval checklist based on risk tier:
-- `low` → team lead only
-- `medium` → team lead + security review
-- `high` → team lead + security review + CAB
-
 Ask: "Who is the team lead approver?" Leave other fields blank for the user to fill after review.
 
 **Final step — Write the file**
@@ -119,7 +111,7 @@ A playbook is production-ready when ALL of the following hold:
 - [ ] `ansible-lint` passes with zero violations
 - [ ] Role `README.md` links back to the spec
 
-**Optional (recommended for `risk_tier: medium/high`):**
+**Optional (recommended):**
 - [ ] A Molecule scenario covers every requirement in the spec
 - [ ] Acceptance criteria from spec §5 are encoded as `assert` tasks in `verify.yml`
 - [ ] `molecule test` passes for all scenarios
@@ -241,7 +233,7 @@ Definitions live in `.claude/agents/`.
 
 - ❌ No playbook without a spec ID
 - ❌ No code that violates `BEST-PRACTICES-SPEC.md` without a documented deviation
-- ⚠️ Molecule tests are optional — but if skipped for `risk_tier: medium/high`, flag it explicitly in the PR
+- ⚠️ Molecule tests are optional — but if skipped, flag it explicitly in the PR
 - ❌ No inline secrets, API keys, or production hostnames
 - ❌ No `shell:` / `command:` when a native module exists
 - ❌ No PR approval in your summary if the Definition of Done is incomplete

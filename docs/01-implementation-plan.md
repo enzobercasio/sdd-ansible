@@ -71,8 +71,8 @@ Pick a low-risk, high-frequency automation use case (user account creation, log 
 
 ```
 > I want to automate <use case>. Walk me through the BASE-SPEC-TEMPLATE
-> and help me draft each section. The risk tier is low. Target group
-> is <group>. Ask me clarifying questions one at a time.
+> and help me draft each section. Target group is <group>. Ask me
+> clarifying questions one at a time.
 ```
 
 ### Week 2: First Playbook
@@ -247,10 +247,7 @@ exit $VIOLATIONS
 Configure AAP job templates to:
 
 1. Pull surveys from spec §5 (Inputs) — keep them in sync
-2. Map RBAC to spec `risk_tier`:
-   - `low` → developers can run
-   - `medium` → requires approval workflow node
-   - `high` → requires CAB-approved scheduled execution only
+2. Map RBAC to playbook sensitivity — use AAP approval workflow nodes for destructive or hard-to-reverse operations
 3. Tag every job with the spec_id for audit reporting
 
 ```bash
@@ -285,7 +282,7 @@ Roll out organisation-wide training and confirm steady-state operation:
 | **CoE Engineers** | Author and maintain spec templates, sub-agents, CI tooling |
 | **Team Leads (CoP)** | Author team-override specs; review team's playbook specs |
 | **Engineers** | Write specs, generate playbooks via Claude Code, run tests |
-| **Security/Compliance** | Review all `risk_tier: medium/high` specs |
+| **Security/Compliance** | Review specs for security-sensitive automation |
 | **Auditors** | Consume Git history + AAP logs as the audit trail |
 
 ## Metrics to Track
@@ -306,7 +303,7 @@ Track these from Week 2 onward:
 
 ### Pitfall 1: "The spec is too much overhead for simple tasks"
 
-**Avoid by**: keeping the BASE-SPEC-TEMPLATE minimal for low-risk tier specs. A `risk_tier: low` spec can be 1 page.
+**Avoid by**: keeping the BASE-SPEC-TEMPLATE minimal for simple specs. A straightforward spec can be 1 page.
 
 ### Pitfall 2: "Engineers skip writing tests"
 
