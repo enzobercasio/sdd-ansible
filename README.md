@@ -32,6 +32,7 @@ Claude Code sub-agents handle distinct stages of the workflow:
 - **`playbook-author`** — generates lint-clean, traceable playbooks and roles from an approved spec
 - **`test-author`** — produces Molecule scenarios mapped to spec requirements (optional)
 - **`security-reviewer`** — reviews generated code for regulated-environment security posture with severity-graded findings
+- **`cac-author`** — generates `infra.controller_configuration`-compatible YAML (job templates + surveys) from an approved spec's §4 Inputs
 - **`tutor`** — CoE-aware onboarding agent that teaches SDD concepts using real repo files, at the learner's pace
 
 ### Full spec-to-code traceability
@@ -89,6 +90,7 @@ sdd-ansible/
 │       ├── playbook-author.md
 │       ├── test-author.md
 │       ├── security-reviewer.md
+│       ├── cac-author.md
 │       └── tutor.md
 ├── ci/
 │   └── check-spec-coverage.sh
@@ -169,6 +171,8 @@ Sub-agents are specialised Claude Code contexts invoked by name for well-defined
 **`test-author.md`** — Generates Molecule test scenarios from spec requirements. Molecule testing is optional; invoke this agent when you want test coverage. Produces a coverage matrix mapping each `REQ-N` to a scenario and assertion, waits for user approval, then generates `molecule.yml`, `converge.yml`, and `verify.yml` for each scenario. Includes positive (happy-path), negative ("shall refuse"/"shall not"), and idempotency scenarios. All tests run inside the configured EE via the VS Code Ansible extension.
 
 **`security-reviewer.md`** — Reviews generated code for regulated-environment security posture.
+
+**`cac-author.md`** — Generates `infra.controller_configuration`-compatible YAML for AAP job templates and surveys from an approved spec. Will not start without `status: approved`. Cross-checks every survey field against `defaults/main.yml` to enforce REQ-A2 (type and default alignment). Outputs to `aap_config/job_templates/`. Invoke with: `> Use the cac-author sub-agent to generate AAP config for AUTO-YYYY-NNNN. Project: "<project>", inventory: "<inventory>", credential: "<cred>"`.
 
 **`tutor.md`** — CoE-aware onboarding agent for engineers new to Ansible or SDD. Teaches concepts using the actual files in this repo as examples, explains the "why" behind every rule, and walks through real specs and roles at the learner's pace. Does not write or modify any files. Invoke with: `> Use the tutor sub-agent to walk me through how spec-driven development works.` Covers secrets handling, privilege management, input validation, network security, audit logging, supply-chain hygiene, and a structured threat model (compromised exec env, compromised credentials, replay attacks, lateral movement, data exfiltration). Returns severity-graded findings (`CRITICAL`/`HIGH`/`MEDIUM`/`LOW`) and a deployment verdict.
 
