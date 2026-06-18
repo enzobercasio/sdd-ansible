@@ -136,6 +136,10 @@ If you find yourself prompting at the task level, you're not doing SDD — you'r
 > Delegate to security-reviewer: review the generated role
 > roles/<name>/ for regulated-environment security posture. Focus on:
 > secrets handling, audit logging, RBAC integration, supply chain.
+
+> Delegate to cac-author: generate the AAP job template and survey YAML
+> for AUTO-2026-NNNN. AAP project name is "<project>", inventory is
+> "<inventory>", machine credential is "<cred>". Output to aap_config/.
 ```
 
 ## Long-Running Workflow Pattern
@@ -161,7 +165,14 @@ For a full spec-to-PR cycle, structure the session in stages:
 
 [review test output]
 
-> Stage 4: PR prep
+> Stage 4: AAP configuration
+> --------------------------
+> Generate the AAP job template and survey YAML for AUTO-2026-NNNN.
+> AAP project: "<project>", inventory: "<inventory>", credential: "<cred>".
+
+[review aap_config/ output, confirm survey fields match §4]
+
+> Stage 5: PR prep
 > ----------------
 > Generate a PR description that traces every change to the spec.
 > Include the test coverage matrix.
@@ -230,10 +241,11 @@ Here's what a high-quality session looks like end-to-end:
 
 [Claude]   [updates REQ-3, asks for status approval]
 
-[Engineer] Approved. Generate role and tests via sub-agents.
+[Engineer] Approved. Generate role, tests, and AAP config via sub-agents.
 
 [Claude]   Delegating to playbook-author... [generates role]
            Delegating to test-author... [generates molecule scenarios]
+           Delegating to cac-author... [generates aap_config/ YAML]
            Running molecule test... [output]
            
            Done checklist:

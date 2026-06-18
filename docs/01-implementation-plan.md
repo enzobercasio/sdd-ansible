@@ -92,6 +92,14 @@ Pick a low-risk, high-frequency automation use case (user account creation, log 
 > AUTO-2026-0001. Each REQ in the spec must have at least one scenario.
 ```
 
+#### Day 3 (optional): Generate AAP Configuration
+
+```
+> Use the cac-author sub-agent to generate the AAP job template and survey
+> YAML for AUTO-2026-0001. AAP project: "<project>", inventory: "<inventory>",
+> credential: "<cred>".
+```
+
 #### Day 4: Run Through CI
 
 Add a basic GitHub Actions / GitLab CI pipeline:

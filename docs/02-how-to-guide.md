@@ -187,6 +187,7 @@ Sub-agents are specialised contexts. Use them when the task is well-defined:
 - `playbook-author` for generation
 - `test-author` for test generation
 - `security-reviewer` for regulated reviews
+- `cac-author` for generating AAP job template and survey YAML (`infra.controller_configuration`)
 
 For exploratory work or cross-cutting changes, just use Claude Code directly.
 
