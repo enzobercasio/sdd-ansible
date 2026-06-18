@@ -101,11 +101,10 @@ The role README must always contain these five sections:
 
 1. **Spec link** — link to `specs/<SPEC-ID>-*.md` and list the full spec hierarchy applied
 2. **Variables** — table copied from spec §4 (Type, Required, Default, Description); include any dict/list structure examples
-3. **Testing** — how to test the playbook before deploying:
-   ```markdown
-   ## Testing
+3. **Testing** — how to test the playbook before deploying. This section is **mandatory** and must always be generated. Include all three sub-sections:
 
-   **Dry run (check mode):**
+   **Sub-section A — Dry run (check mode):**
+
    ```bash
    ansible-playbook examples/playbooks/<playbook>.yml \
      --check --diff \
@@ -113,7 +112,8 @@ The role README must always contain these five sections:
      -e @<vars-file>.yml
    ```
 
-   **With ansible-navigator (inside EE):**
+   **Sub-section B — With ansible-navigator (inside EE):**
+
    ```bash
    ansible-navigator run examples/playbooks/<playbook>.yml \
      --mode stdout \
@@ -123,10 +123,9 @@ The role README must always contain these five sections:
      --check
    ```
 
-   **Molecule tests** *(if present)*:
+   **Sub-section C — Molecule tests** *(include even if no Molecule scenarios exist yet; note them as "not yet authored" if absent)*:
    - Via VS Code Ansible extension: open Testing panel (`Ctrl+Shift+T`) and run the scenario
    - Via CLI: `cd examples/roles/<role_name> && molecule test --all`
-   ```
 
 4. **AAP Usage** — how to configure and run in Ansible Automation Platform:
    ```markdown
