@@ -214,7 +214,8 @@ Apply these unless the spec says otherwise:
 1. Read the existing spec
 2. If the change fits the spec → implement and update tests
 3. If it needs new requirements → propose spec amendment first, then implement
-4. Bump `spec_version` in spec frontmatter and play vars
+4. Bump `spec_version` in spec frontmatter and play vars only if the spec itself changed
+5. **Scope the diff to the requirement being changed.** Identify the tasks/files tagged with the affected `req:REQ-N` before editing, touch only those, and leave unrelated code (formatting, ordering, naming) untouched even if it could be improved. Review `git diff` against the requirement before calling the work done — any line that doesn't trace to the change being made should be reverted.
 
 **Reverse-engineering legacy playbooks**
 1. Read the playbook; produce a retrospective spec describing what it does

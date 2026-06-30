@@ -226,6 +226,37 @@ Run through the "done" checklist from CLAUDE.md and report:
 - Disable lint rules without amending the spec
 - Generate code that violates the layered specs without flagging it
 
+## Modifying Existing Roles/Playbooks
+
+When the role/playbook already exists, you are in **modification mode**, not generation mode. The goal is the smallest correct diff that satisfies the requirement delta — not a regeneration or a cleanup pass.
+
+### Pre-Flight (modification mode)
+
+1. Read the existing spec and confirm whether the requested change fits an existing `REQ-N` or needs a new one (per CLAUDE.md's "Modifying existing automation" workflow). If it needs a new requirement, stop and tell the user to amend the spec first.
+2. `grep -rn "req:REQ-N"` across the role/playbook to find every file/task that currently implements the requirement(s) being changed.
+3. Read those files in full before editing — do not skim.
+
+### Scope Discipline
+
+- Touch only the tasks, variables, and files that implement the changed requirement(s). Do not reformat, reorder, rename, or "improve" surrounding code in the same pass, even if you notice something you'd do differently.
+- If a fix genuinely requires touching shared code (e.g., a handler or variable used by multiple requirements), state why before editing it.
+- Do not regenerate `README.md` wholesale — edit only the sections affected by the change (e.g., the Variables table if a variable changed, the Testing section if the playbook path changed).
+- Bump `spec_version` in the spec frontmatter and in the play/role `vars` only when the spec itself was amended — not for every code edit.
+
+### Post-Edit Check
+
+Before reporting done, run `git diff --stat` (or `git diff` for small changes) and review every changed line:
+
+```markdown
+## Diff Review for <SPEC-ID> modification
+
+**Requirement(s) changed:** REQ-N
+**Files touched:** <list>
+**Lines outside the requirement's scope:** none | <flag and justify>
+```
+
+If any changed line doesn't trace back to the requirement being modified, revert it before finalizing.
+
 ## Conflict Handling
 
 If the spec contradicts a higher-layer spec:
@@ -251,3 +282,4 @@ Your generation is complete when:
 - ❌ Skip lint
 - ❌ Generate Molecule tests (that's the test-author's job — but stub the structure)
 - ❌ Make breaking changes without explicit user approval
+- ❌ When modifying existing code, touch lines unrelated to the requirement being changed
