@@ -106,7 +106,7 @@ The role README must always contain these five sections:
    **Sub-section A — Dry run (check mode):**
 
    ```bash
-   ansible-playbook examples/playbooks/<playbook>.yml \
+   ansible-playbook playbooks/<playbook>.yml \
      --check --diff \
      -i <inventory> \
      -e @<vars-file>.yml
@@ -115,7 +115,7 @@ The role README must always contain these five sections:
    **Sub-section B — With ansible-navigator (inside EE):**
 
    ```bash
-   ansible-navigator run examples/playbooks/<playbook>.yml \
+   ansible-navigator run playbooks/<playbook>.yml \
      --mode stdout \
      --execution-environment-image registry.redhat.io/ansible-automation-platform/ee-supported-rhel9:latest \
      --inventory <inventory> \
@@ -125,7 +125,7 @@ The role README must always contain these five sections:
 
    **Sub-section C — Molecule tests** *(include even if no Molecule scenarios exist yet; note them as "not yet authored" if absent)*:
    - Via VS Code Ansible extension: open Testing panel (`Ctrl+Shift+T`) and run the scenario
-   - Via CLI: `cd examples/roles/<role_name> && molecule test --all`
+   - Via CLI: `cd roles/<role_name> && molecule test --all`
 
 4. **AAP Usage** — how to configure and run in Ansible Automation Platform:
    ```markdown
@@ -134,7 +134,7 @@ The role README must always contain these five sections:
    ### Job Template settings
    | Field | Value |
    |---|---|
-   | Playbook | `examples/playbooks/<playbook>.yml` |
+   | Playbook | `playbooks/<playbook>.yml` |
    | Credentials | Machine credential + Vault credential (if secrets used) |
    | Inventory | Target inventory or smart inventory matching spec §2 scope |
    | Execution Environment | `ee-supported-rhel9` (latest) |

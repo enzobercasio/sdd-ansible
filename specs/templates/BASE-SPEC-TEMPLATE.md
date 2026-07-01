@@ -2,11 +2,13 @@
 spec_id: AUTO-YYYY-NNNN
 title: <Short descriptive title>
 status: draft  # draft | review | approved | in-use | deprecated
+version: "1.0"
 owner: <team-email@company.com>
 team: <team-name>          # triggers TEAM-<name>-overrides.md if one exists
 use_case: <use-case-tag>   # triggers USE-CASE-<tag>-overrides.md if one exists
 target_environments: [dev, staging, prod]
 created: <YYYY-MM-DD>
+last_modified: <YYYY-MM-DD>
 ---
 
 # Spec: <Title>
@@ -92,3 +94,13 @@ _<Step-by-step rollback or link to runbook>_
 | Deviation | Rule | Justification | Accepted by |
 |---|---|---|---|
 | <description> | REQ-S1 | <technical reason> | <name, date> |
+
+---
+
+## §8 Changelog
+
+> Update this table whenever the spec changes after initial creation. Every row must reference the requirement(s) affected and who authorised the change.
+
+| Version | Date | Author | Status transition | Summary of change | REQ(s) affected |
+|---|---|---|---|---|---|
+| 1.0 | <YYYY-MM-DD> | <name> | draft | Initial draft | — |

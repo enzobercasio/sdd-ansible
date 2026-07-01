@@ -51,6 +51,7 @@ Ask, and suggest a reasonable value for each field based on the user's descripti
 - Which team owns this? (suggest the most likely team given the use case; list the available teams if known)
 - Is this a specific use case (EDA, network, security)? (suggest one if the description implies it)
 - Which environments does this target? (suggest `[dev, staging, prod]` as the default starting point)
+- Set `version: "1.0"`, `created:` and `last_modified:` to today's date automatically — do not ask.
 
 **Step 1 — §1 Intent**
 Ask: "In one or two sentences, what business outcome does this automation achieve? Focus on the *why*, not the how."
@@ -87,7 +88,7 @@ Ask: "Who is the team lead approver?" Leave other fields blank for the user to f
 Suggest the team lead name if it has come up earlier in the conversation.
 
 **Final step — Write the file**
-Show a summary: "I'm about to write `specs/AUTO-YYYY-NNNN-<title>.md` with status: `draft`. Here's what will be in it: [summary]." Wait for confirmation, then write the file.
+Show a summary: "I'm about to write `specs/AUTO-YYYY-NNNN-<title>.md` with status: `draft`. Here's what will be in it: [summary]." Wait for confirmation, then write the file. Populate the §8 Changelog with a single initial row: version `1.0`, today's date, the owner name, status `draft`, summary `Initial draft`, REQ(s) `—`.
 
 ---
 
@@ -214,8 +215,9 @@ Apply these unless the spec says otherwise:
 1. Read the existing spec
 2. If the change fits the spec → implement and update tests
 3. If it needs new requirements → propose spec amendment first, then implement
-4. Bump `spec_version` in spec frontmatter and play vars only if the spec itself changed
-5. **Scope the diff to the requirement being changed.** Identify the tasks/files tagged with the affected `req:REQ-N` before editing, touch only those, and leave unrelated code (formatting, ordering, naming) untouched even if it could be improved. Review `git diff` against the requirement before calling the work done — any line that doesn't trace to the change being made should be reverted.
+4. Bump `version` in spec frontmatter and `spec_version` in play vars only if the spec itself changed. Update `last_modified` to today's date whenever any spec field changes.
+5. **Append a row to §8 Changelog** whenever the spec changes: new version number, today's date, author, any status transition (e.g. `approved → in-use`), one-line summary of what changed, and the REQ(s) affected.
+6. **Scope the diff to the requirement being changed.** Identify the tasks/files tagged with the affected `req:REQ-N` before editing, touch only those, and leave unrelated code (formatting, ordering, naming) untouched even if it could be improved. Review `git diff` against the requirement before calling the work done — any line that doesn't trace to the change being made should be reverted.
 
 **Reverse-engineering legacy playbooks**
 1. Read the playbook; produce a retrospective spec describing what it does
@@ -239,6 +241,21 @@ Definitions live in `.claude/agents/`.
 
 ---
 
+## Output Folder Conventions
+
+All generated artifacts go to these top-level directories — always relative to the repo root:
+
+| Artifact | Path |
+|---|---|
+| Spec | `specs/AUTO-YYYY-NNNN-<title>.md` |
+| Playbook | `playbooks/<playbook_name>.yml` |
+| Role | `roles/<role_name>/` |
+| AAP CaC YAML | `aap_config/job_templates/` |
+
+`examples/` is for hand-crafted reference implementations only — never write generated output there.
+
+---
+
 ## Hard Limits
 
 - ❌ No playbook without a spec ID
@@ -247,3 +264,22 @@ Definitions live in `.claude/agents/`.
 - ❌ No inline secrets, API keys, or production hostnames
 - ❌ No `shell:` / `command:` when a native module exists
 - ❌ No PR approval in your summary if the Definition of Done is incomplete
+
+---
+
+## CHANGELOG.md Maintenance
+
+`CHANGELOG.md` is the kit-level audit trail. **At the end of every session where any file in this repo was modified**, append a new dated entry to the top of `CHANGELOG.md` (below the header, above the previous entry) following this format:
+
+```markdown
+## [YYYY-MM-DD] — `<commit hash if committed, else "Uncommitted">`
+
+### Added / Changed / Fixed / Removed
+- `<file>` — <one-line description of what changed and why>
+```
+
+Rules:
+- Use `### Added` for new files or sections, `### Changed` for edits, `### Fixed` for bug/error corrections, `### Removed` for deletions
+- One bullet per file changed — group multiple changes to the same file into one bullet
+- Never summarise the conversation — record the artifact change, not the discussion
+- If the session produces no file changes (discussion only), do not append an entry

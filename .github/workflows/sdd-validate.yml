@@ -1,0 +1,75 @@
+---
+name: SDD Pre-Merge Validation
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  # -----------------------------------------------------------------------
+  # Job 1: SDD Invariants Gate (BLOCKING)
+  # Enforces the four SDD traceability invariants via ci/check-spec-coverage.sh:
+  #   1. Every play declares spec_id
+  #   2. Every role meta/main.yml references spec_id
+  #   3. Every spec_id in code resolves to an approved or in-use spec
+  #   4. Warns (non-blocking) if an approved spec has no Molecule scenario
+  # PRs that fail this job cannot be merged.
+  # -----------------------------------------------------------------------
+  sdd-invariants:
+    name: SDD Invariants Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Run spec coverage check
+        run: bash ci/check-spec-coverage.sh
+
+  # -----------------------------------------------------------------------
+  # Job 2: Ansible Lint (BLOCKING)
+  # Runs ansible-lint with the production profile defined in .ansible-lint.
+  # PRs that introduce lint violations cannot be merged.
+  # -----------------------------------------------------------------------
+  lint:
+    name: Ansible Lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install ansible-lint
+        run: pip install --quiet ansible-lint
+
+      - name: Run ansible-lint
+        run: ansible-lint
+
+  # -----------------------------------------------------------------------
+  # Job 3: Molecule Tests (NON-BLOCKING warning if no scenarios exist)
+  # Runs molecule test for every role under roles/ that has a molecule/
+  # directory. Skips silently if no scenarios are present.
+  # -----------------------------------------------------------------------
+  molecule:
+    name: Molecule Tests
+    runs-on: ubuntu-latest
+    needs: [sdd-invariants, lint]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install tooling
+        run: pip install --quiet ansible molecule molecule-plugins[docker]
+
+      - name: Run Molecule for all roles
+        run: |
+          tested=0
+          for role in roles/*/; do
+            if [[ -d "${role}molecule" ]]; then
+              echo "Running molecule test for ${role}"
+              (cd "${role}" && molecule test)
+              tested=$((tested + 1))
+            fi
+          done
+          if [[ $tested -eq 0 ]]; then
+            echo "No Molecule scenarios found — skipping. Add tests with the test-author sub-agent."
+          fi
